@@ -2,10 +2,11 @@ import copy
 from youtubesearchpython.internal.extras import *
 from youtubesearchpython.internal.constants import *
 
+
 class Video(VideoInternal):
     @staticmethod
     def get(videoLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
-        '''Fetches information and formats  for the given video link or ID.
+        """Fetches information and formats  for the given video link or ID.
         Returns None if video is unavailable.
 
         Args:
@@ -249,12 +250,12 @@ class Video(VideoInternal):
                         }
                     ]
                 }
-        '''
+        """
         return Video(videoLink, None, mode).result
-    
+
     @staticmethod
     def getInfo(videoLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
-        '''Fetches only information for the given video link or ID.
+        """Fetches only information for the given video link or ID.
         Returns None if video is unavailable.
 
         Args:
@@ -333,12 +334,14 @@ class Video(VideoInternal):
                 "uploadDate": "2020-05-18",
                 "link": "https://www.youtube.com/watch?v=E07s5ZYygMg",
             }
-        '''
+        """
         return Video(videoLink, "getInfo", mode).result
 
     @staticmethod
-    def getFormats(videoLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
-        '''Fetches formats  for the given video link or ID.
+    def getFormats(
+        videoLink: str, mode: int = ResultMode.dict
+    ) -> Union[dict, str, None]:
+        """Fetches formats  for the given video link or ID.
         Returns None if video is unavailable.
 
         Args:
@@ -517,13 +520,12 @@ class Video(VideoInternal):
                     ]
                 }
             }
-        '''
+        """
         return Video(videoLink, "getFormats", mode).result
 
 
-
 class Playlist:
-    '''Fetches information and videos for the given playlist link.
+    """Fetches information and videos for the given playlist link.
     Returns None if playlist is unavailable.
 
     The information of the playlist can be accessed in the `info` field of the class.
@@ -537,7 +539,8 @@ class Playlist:
 
     Args:
         playlistLink (str): link of the playlist on YouTube.
-    '''
+    """
+
     __playlist = None
     videos = []
     info = None
@@ -546,21 +549,22 @@ class Playlist:
     def __init__(self, playlistLink: str):
         self.__playlist = PlaylistInternal(playlistLink, None, ResultMode.dict)
         self.info = copy.deepcopy(self.__playlist.playlistComponent)
-        self.videos = self.__playlist.playlistComponent['videos']
+        self.videos = self.__playlist.playlistComponent["videos"]
         self.hasMoreVideos = self.__playlist.continuationKey != None
-        self.info.pop('videos')
+        self.info.pop("videos")
 
-    '''Fetches more susequent videos of the playlist, and appends to the `videos` list.
+    """Fetches more susequent videos of the playlist, and appends to the `videos` list.
     `hasMoreVideos` bool indicates whether more videos can be fetched or not.
-    '''
+    """
+
     def getNextVideos(self) -> None:
         self.__playlist.next()
-        self.videos = self.__playlist.playlistComponent['videos']
+        self.videos = self.__playlist.playlistComponent["videos"]
         self.hasMoreVideos = self.__playlist.continuationKey != None
 
     @staticmethod
     def get(playlistLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
-        '''Fetches information and videos for the given playlist link.
+        """Fetches information and videos for the given playlist link.
         Returns None if playlist is unavailable.
 
         Args:
@@ -1107,12 +1111,14 @@ class Playlist:
                     }
                 ]
             }
-        '''
+        """
         return PlaylistInternal(playlistLink, None, mode).result
-    
+
     @staticmethod
-    def getInfo(playlistLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
-        '''Fetches only information for the given playlist link.
+    def getInfo(
+        playlistLink: str, mode: int = ResultMode.dict
+    ) -> Union[dict, str, None]:
+        """Fetches only information for the given playlist link.
         Returns None if playlist is unavailable.
 
         Args:
@@ -1176,12 +1182,14 @@ class Playlist:
                     "link": "https://www.youtube.com/channel/UC_aEa8K-EOJ3D6gOs7HcyNg"
                 }
             }
-        '''
-        return PlaylistInternal(playlistLink, 'getInfo', mode).result
+        """
+        return PlaylistInternal(playlistLink, "getInfo", mode).result
 
     @staticmethod
-    def getVideos(playlistLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
-        '''Fetches only videos in the given playlist from link.
+    def getVideos(
+        playlistLink: str, mode: int = ResultMode.dict
+    ) -> Union[dict, str, None]:
+        """Fetches only videos in the given playlist from link.
         Returns None if playlist is unavailable.
 
         Args:
@@ -1677,5 +1685,5 @@ class Playlist:
                     }
                 ]
             }
-        '''
-        return PlaylistInternal(playlistLink, 'getVideos', mode).result
+        """
+        return PlaylistInternal(playlistLink, "getVideos", mode).result

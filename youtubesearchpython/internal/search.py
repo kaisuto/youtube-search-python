@@ -10,7 +10,9 @@ class SearchInternal(RequestHandler, ComponentHandler):
     responseSource = None
     resultComponents = []
 
-    def __init__(self, query: str, limit: int, language: str, region: str, searchPreferences: str):
+    def __init__(
+        self, query: str, limit: int, language: str, region: str, searchPreferences: str
+    ):
         self.query = query
         self.limit = limit
         self.language = language
@@ -19,30 +21,30 @@ class SearchInternal(RequestHandler, ComponentHandler):
         self.continuationKey = None
         self._makeRequest()
         self._parseSource()
-    
+
     def result(self, mode: int = ResultMode.dict) -> Union[str, dict]:
-        '''Returns the search result.
+        """Returns the search result.
 
         Args:
             mode (int, optional): Sets the type of result. Defaults to ResultMode.dict.
 
         Returns:
             Union[str, dict]: Returns JSON or dictionary.
-        '''
+        """
         if mode == ResultMode.json:
-            return json.dumps({'result': self.resultComponents}, indent = 4)
+            return json.dumps({"result": self.resultComponents}, indent=4)
         elif mode == ResultMode.dict:
-            return {'result': self.resultComponents}
+            return {"result": self.resultComponents}
 
     def next(self) -> bool:
-        '''Gets the subsequent search result. Call result
+        """Gets the subsequent search result. Call result
 
         Args:
             mode (int, optional): Sets the type of result. Defaults to ResultMode.dict.
 
         Returns:
             Union[str, dict]: Returns True if getting more results was successful.
-        '''
+        """
         if self.continuationKey:
             self.response = None
             self.responseSource = None
@@ -54,7 +56,9 @@ class SearchInternal(RequestHandler, ComponentHandler):
         else:
             return False
 
-    def _getComponents(self, findVideos: bool, findChannels: bool, findPlaylists: bool) -> None:
+    def _getComponents(
+        self, findVideos: bool, findChannels: bool, findPlaylists: bool
+    ) -> None:
         self.resultComponents = []
         for element in self.responseSource:
             if videoElementKey in element.keys() and findVideos:
@@ -64,23 +68,36 @@ class SearchInternal(RequestHandler, ComponentHandler):
             if playlistElementKey in element.keys() and findPlaylists:
                 self.resultComponents.append(self._getPlaylistComponent(element))
             if shelfElementKey in element.keys() and findVideos:
-                for shelfElement in self._getShelfComponent(element)['elements']:
-                    self.resultComponents.append(self._getVideoComponent(shelfElement, shelfTitle = self._getShelfComponent(element)['title']))
+                for shelfElement in self._getShelfComponent(element)["elements"]:
+                    self.resultComponents.append(
+                        self._getVideoComponent(
+                            shelfElement,
+                            shelfTitle=self._getShelfComponent(element)["title"],
+                        )
+                    )
             if richItemKey in element.keys() and findVideos:
-                richItemElement = self._getValue(element, [richItemKey, 'content'])
-                ''' Initial fallback handling for VideosSearch '''
+                richItemElement = self._getValue(element, [richItemKey, "content"])
+                """ Initial fallback handling for VideosSearch """
                 if videoElementKey in richItemElement.keys():
                     videoComponent = self._getVideoComponent(richItemElement)
                     self.resultComponents.append(videoComponent)
             if len(self.resultComponents) >= self.limit:
                 break
 
+
 class ChannelSearchInternal(RequestHandler, ComponentHandler):
     response = None
     responseSource = None
     resultComponents = []
 
-    def __init__(self, query: str, language: str, region: str, searchPreferences: str, browseId: str):
+    def __init__(
+        self,
+        query: str,
+        language: str,
+        region: str,
+        searchPreferences: str,
+        browseId: str,
+    ):
         self.query = query
         self.language = language
         self.region = region
@@ -90,17 +107,17 @@ class ChannelSearchInternal(RequestHandler, ComponentHandler):
         self._makeChannelSearchRequest()
         self._parseChannelSearchSource()
         self.response = self._getChannelSearchComponent(self.response)
-    
+
     def result(self, mode: int = ResultMode.dict) -> Union[str, dict]:
-        '''Returns the search result.
+        """Returns the search result.
 
         Args:
             mode (int, optional): Sets the type of result. Defaults to ResultMode.dict.
 
         Returns:
             Union[str, dict]: Returns JSON or dictionary.
-        '''
+        """
         if mode == ResultMode.json:
-            return json.dumps({'result': self.response}, indent = 4)
+            return json.dumps({"result": self.response}, indent=4)
         elif mode == ResultMode.dict:
-            return {'result': self.response}
+            return {"result": self.response}

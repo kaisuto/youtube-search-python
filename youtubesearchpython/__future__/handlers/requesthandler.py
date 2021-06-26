@@ -4,47 +4,57 @@ from youtubesearchpython.__future__.internal.constants import *
 
 
 class RequestHandler(ComponentHandler):
-    async def _makeRequest(self, requestBody = requestPayload, timeout = None) -> None:
-        requestBody['query'] = self.query
-        requestBody['client'] = {
-            'hl': self.language,
-            'gl': self.region,
+    async def _makeRequest(self, requestBody=requestPayload, timeout=None) -> None:
+        requestBody["query"] = self.query
+        requestBody["client"] = {
+            "hl": self.language,
+            "gl": self.region,
         }
         if self.searchPreferences:
-            requestBody['params'] = self.searchPreferences
+            requestBody["params"] = self.searchPreferences
         if self.continuationKey:
-            requestBody['continuation'] = self.continuationKey
+            requestBody["continuation"] = self.continuationKey
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
-                    'https://www.youtube.com/youtubei/v1/search',
-                    params = {
-                        'key': searchKey,
+                    "https://www.youtube.com/youtubei/v1/search",
+                    params={
+                        "key": searchKey,
                     },
-                    headers = {
-                        'User-Agent': userAgent,
+                    headers={
+                        "User-Agent": userAgent,
                     },
-                    json = requestBody,
-                    timeout = timeout
+                    json=requestBody,
+                    timeout=timeout,
                 )
                 self.response = response.json()
         except:
-            raise Exception('ERROR: Could not make request.')
-    
+            raise Exception("ERROR: Could not make request.")
+
     async def _parseSource(self) -> None:
         try:
             if not self.continuationKey:
                 responseContent = await self._getValue(self.response, contentPath)
             else:
-                responseContent = await self._getValue(self.response, continuationContentPath)
+                responseContent = await self._getValue(
+                    self.response, continuationContentPath
+                )
             if responseContent:
                 for element in responseContent:
                     if itemSectionKey in element.keys():
-                        self.responseSource = await self._getValue(element, [itemSectionKey, 'contents'])
+                        self.responseSource = await self._getValue(
+                            element, [itemSectionKey, "contents"]
+                        )
                     if continuationItemKey in element.keys():
-                        self.continuationKey = await self._getValue(element, continuationKeyPath)
+                        self.continuationKey = await self._getValue(
+                            element, continuationKeyPath
+                        )
             else:
-                self.responseSource = await self._getValue(self.response, fallbackContentPath)
-                self.continuationKey = await self._getValue(self.responseSource[-1], continuationKeyPath)
+                self.responseSource = await self._getValue(
+                    self.response, fallbackContentPath
+                )
+                self.continuationKey = await self._getValue(
+                    self.responseSource[-1], continuationKeyPath
+                )
         except:
-            raise Exception('ERROR: Could not parse YouTube response.')
+            raise Exception("ERROR: Could not parse YouTube response.")

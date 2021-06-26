@@ -1,16 +1,18 @@
 from typing import Union
-from youtubesearchpython.__future__.internal.streamurlfetcher import StreamURLFetcherInternal
+from youtubesearchpython.__future__.internal.streamurlfetcher import (
+    StreamURLFetcherInternal,
+)
 
 
 class StreamURLFetcher(StreamURLFetcherInternal):
-    '''Gets direct stream URLs for a YouTube video fetched using `Video.get` or `Video.getFormats`.
+    """Gets direct stream URLs for a YouTube video fetched using `Video.get` or `Video.getFormats`.
 
     This class can fetch direct video URLs without any additional network requests (that's really fast).
 
     Call `get` or `getAll` method of this class & pass response returned by `Video.get` or `Video.getFormats` as parameter to fetch direct URLs.
     Getting URLs or downloading streams using youtube-dl or PyTube is can be a slow, because of the fact that they make requests to fetch the same content, which one might have already recieved at the time of showing it to the user etc.
     This class makes use of PyTube (if installed) & makes some slight improvements to functioning of PyTube.
-    
+
     Call `self.getJavaScript` method before any other method from this class.
     Do not call this method more than once & avoid reinstaciating the class.
 
@@ -27,12 +29,13 @@ class StreamURLFetcher(StreamURLFetcherInternal):
         >>> url = fetcher.get(video, 251)
         >>> print(url)
         "https://r6---sn-gwpa-5bgk.googlevideo.com/videoplayback?expire=1610798125&ei=zX8CYITXEIGKz7sP9MWL0AE&ip=2409%3A4053%3A803%3A2b22%3Adc68%3Adfb9%3Aa676%3A26a3&id=o-APBakKSE2_eMDMegtCmeWXfuhhUfAzJTmOCWj4lkEjAM&itag=251&source=youtube&requiressl=yes&mh=aP&mm=31%2C29&mn=sn-gwpa-5bgk%2Csn-gwpa-qxad&ms=au%2Crdu&mv=m&mvi=6&pl=36&initcwndbps=146250&vprv=1&mime=audio%2Fwebm&ns=ULL4mkMO31KDtEhOjkOrmpkF&gir=yes&clen=10210834&dur=634.601&lmt=1544629945422176&mt=1610776131&fvip=6&keepalive=yes&c=WEB&txp=5511222&n=uEjSqtzBZaJyVn&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cdur%2Clmt&sig=AOq0QJ8wRAIgKKIEiwQTgXsdKPEyOckgVPs_LMH6KJoeaYmZic_lelECIHXHs1ZnSP5mgtpffNlIMJM3DhxcvDbA-4udFFE6AmVP&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIhAPmhL745RYeL_ffgUJk_xJLC-8riXKMylLTLA_pITYWWAiB2qUIXur8ThW7cLfQ73mIVK61mMZc2ncK6FZWjUHGcUw%3D%3D"
-    '''
+    """
+
     def __init__(self):
         super().__init__()
 
     async def get(self, videoFormats: dict, itag: int) -> Union[str, None]:
-        '''Gets direct stream URL for a YouTube video fetched using `Video.get` or `Video.getFormats`.
+        """Gets direct stream URL for a YouTube video fetched using `Video.get` or `Video.getFormats`.
 
         Args:
             videoFormats (dict): Dictionary returned by `Video.get` or `Video.getFormats`.
@@ -51,7 +54,7 @@ class StreamURLFetcher(StreamURLFetcherInternal):
             >>> url = await fetcher.get(video, 251)
             >>> print(url)
             "https://r6---sn-gwpa-5bgk.googlevideo.com/videoplayback?expire=1610798125&ei=zX8CYITXEIGKz7sP9MWL0AE&ip=2409%3A4053%3A803%3A2b22%3Adc68%3Adfb9%3Aa676%3A26a3&id=o-APBakKSE2_eMDMegtCmeWXfuhhUfAzJTmOCWj4lkEjAM&itag=251&source=youtube&requiressl=yes&mh=aP&mm=31%2C29&mn=sn-gwpa-5bgk%2Csn-gwpa-qxad&ms=au%2Crdu&mv=m&mvi=6&pl=36&initcwndbps=146250&vprv=1&mime=audio%2Fwebm&ns=ULL4mkMO31KDtEhOjkOrmpkF&gir=yes&clen=10210834&dur=634.601&lmt=1544629945422176&mt=1610776131&fvip=6&keepalive=yes&c=WEB&txp=5511222&n=uEjSqtzBZaJyVn&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cdur%2Clmt&sig=AOq0QJ8wRAIgKKIEiwQTgXsdKPEyOckgVPs_LMH6KJoeaYmZic_lelECIHXHs1ZnSP5mgtpffNlIMJM3DhxcvDbA-4udFFE6AmVP&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIhAPmhL745RYeL_ffgUJk_xJLC-8riXKMylLTLA_pITYWWAiB2qUIXur8ThW7cLfQ73mIVK61mMZc2ncK6FZWjUHGcUw%3D%3D"
-        '''
+        """
         await self._getDecipheredURLs(videoFormats)
         for stream in self.player_response["url_encoded_fmt_stream_map"]:
             if stream["itag"] == itag:
@@ -59,14 +62,14 @@ class StreamURLFetcher(StreamURLFetcherInternal):
         return None
 
     async def getAll(self, videoFormats: dict) -> dict:
-        '''Gets all stream URLs for a YouTube video fetched using `Video.get` or `Video.getFormats`.
+        """Gets all stream URLs for a YouTube video fetched using `Video.get` or `Video.getFormats`.
 
         Args:
             videoFormats (dict): Dictionary returned by `Video.get` or `Video.getFormats`.
 
         Returns:
             Union[dict, None]: Returns stream URLs in a dictionary.
-        
+
         Examples:
             Returns direct stream URLs in a dictionary.
 
@@ -136,6 +139,6 @@ class StreamURLFetcher(StreamURLFetcherInternal):
                     }
                 ]
             }
-        '''
+        """
         await self._getDecipheredURLs(videoFormats)
         return {"streams": self.player_response["url_encoded_fmt_stream_map"]}
