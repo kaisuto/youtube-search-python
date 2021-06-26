@@ -339,9 +339,8 @@ class ChannelSearch(ChannelSearchInternal):
         browseId: str,
         language: str = "en",
         region: str = "US",
-        searchPreferences: str = "EgZzZWFyY2g%3D",
     ):
-        super().__init__(query, language, region, searchPreferences, browseId)
+        super().__init__(query, language, region, SearchMode.channelVideos, browseId)
 
 
 class CustomSearch(SearchInternal):

@@ -80,6 +80,8 @@ class SearchMode:
     videos = "EgIQAQ%3D%3D"
     channels = "EgIQAg%3D%3D"
     playlists = "EgIQAw%3D%3D"
+    channelVideos = "EgZzZWFyY2g%3D"
+    listChannelVideos = "EgZ2aWRlb3M%3D"
 
 
 class VideoUploadDateFilter:
