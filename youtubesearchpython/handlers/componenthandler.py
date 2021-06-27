@@ -275,6 +275,130 @@ class ComponentHandler:
             channelsearch.append(json)
         return channelsearch
 
+    def _getVideoFromChannelVideoSearch(self, elements: list) -> list:
+        return self._getVideoFromChannelSearch(elements)
+
+    def _getChannelVideoSearchComponent(self, elements: list) -> list:
+        videos = []
+        for element in elements:
+            responsetype = None
+
+            try:
+                element = element["itemSectionRenderer"]["contents"][0]["videoRenderer"]
+                responsetype = "video"
+            except:
+                element = element["itemSectionRenderer"]["contents"][0][
+                    "playlistRenderer"
+                ]
+                responsetype = "playlist"
+
+            if responsetype == "video":
+                video = {
+                    "id": self._getValue(element, ["videoId"]),
+                    "thumbnails": {
+                        "normal": self._getValue(element, ["thumbnail", "thumbnails"]),
+                        "rich": self._getValue(
+                            element,
+                            [
+                                "richThumbnail",
+                                "movingThumbnailRenderer",
+                                "movingThumbnailDetails",
+                                "thumbnails",
+                            ],
+                        ),
+                    },
+                    "title": self._getValue(element, ["title", "runs", 0, "text"]),
+                    "descriptionSnippet": self._getValue(
+                        element, ["descriptionSnippet", "runs", 0, "text"]
+                    ),
+                    "uri": self._getValue(
+                        element,
+                        [
+                            "navigationEndpoint",
+                            "commandMetadata",
+                            "webCommandMetadata",
+                            "url",
+                        ],
+                    ),
+                    "views": {
+                        "precise": self._getValue(
+                            element, ["viewCountText", "simpleText"]
+                        ),
+                        "simple": self._getValue(
+                            element, ["shortViewCountText", "simpleText"]
+                        ),
+                        "approximate": self._getValue(
+                            element,
+                            [
+                                "shortViewCountText",
+                                "accessibility",
+                                "accessibilityData",
+                                "label",
+                            ],
+                        ),
+                    },
+                    "duration": {
+                        "simpleText": self._getValue(
+                            element, ["lengthText", "simpleText"]
+                        ),
+                        "text": self._getValue(
+                            element,
+                            [
+                                "lengthText",
+                                "accessibility",
+                                "accessibilityData",
+                                "label",
+                            ],
+                        ),
+                    },
+                    "published": self._getValue(
+                        element, ["publishedTimeText", "simpleText"]
+                    ),
+                    "channel": {
+                        "name": self._getValue(
+                            element, ["ownerText", "runs", 0, "text"]
+                        ),
+                        "thumbnails": self._getValue(
+                            element,
+                            [
+                                "channelThumbnailSupportedRenderers",
+                                "channelThumbnailWithLinkRenderer",
+                                "thumbnail",
+                                "thumbnails",
+                            ],
+                        ),
+                    },
+                    "type": responsetype,
+                }
+            else:
+                video = {
+                    "id": self._getValue(element, ["playlistId"]),
+                    "videos": self._getVideoFromChannelSearch(
+                        self._getValue(element, ["videos"])
+                    ),
+                    "thumbnails": {
+                        "normal": self._getValue(element, ["thumbnails"]),
+                    },
+                    "title": self._getValue(element, ["title", "simpleText"]),
+                    "uri": self._getValue(
+                        element,
+                        [
+                            "navigationEndpoint",
+                            "commandMetadata",
+                            "webCommandMetadata",
+                            "url",
+                        ],
+                    ),
+                    "channel": {
+                        "name": self._getValue(
+                            element, ["longBylineText", "runs", 0, "text"]
+                        ),
+                    },
+                    "type": responsetype,
+                }
+            videos.append(video)
+        return videos
+
     def _getShelfComponent(self, element: dict) -> dict:
         shelf = element[shelfElementKey]
         return {

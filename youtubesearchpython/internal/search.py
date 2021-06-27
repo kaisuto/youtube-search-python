@@ -121,3 +121,41 @@ class ChannelSearchInternal(RequestHandler, ComponentHandler):
             return json.dumps({"result": self.response}, indent=4)
         elif mode == ResultMode.dict:
             return {"result": self.response}
+
+
+class ChannelVideoSearchInternal(RequestHandler, ComponentHandler):
+    response = None
+    responseSource = None
+    resultComponents = []
+
+    def __init__(
+        self,
+        query: str,
+        browseId: str,
+        language: str,
+        region: str,
+        searchPreferences: str,
+    ):
+        self.query = query
+        self.language = language
+        self.region = region
+        self.browseId = browseId
+        self.searchPreferences = searchPreferences
+        self.continuationKey = None
+        self._makeChannelVideoSearchRequest()
+        self._parseChannelVideoSearchSource()
+        self.response = self._getChannelVideoSearchComponent(self.response)
+
+    def result(self, mode: int = ResultMode.dict) -> Union[str, dict]:
+        """Returns the search result.
+
+        Args:
+            mode (int, optional): Sets the type of result. Defaults to ResultMode.dict.
+
+        Returns:
+            Union[str, dict]: Returns JSON or dictionary.
+        """
+        if mode == ResultMode.json:
+            return json.dumps({"result": self.response}, indent=4)
+        elif mode == ResultMode.dict:
+            return {"result": self.response}

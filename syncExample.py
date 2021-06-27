@@ -135,6 +135,14 @@ print(channel.result(mode=ResultMode.json))
 
 
 """
+Search videos in specified channel from YouTube.
+"""
+search = ChannelVideosSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
+
+print(search.result(mode=ResultMode.json))
+
+
+"""
 Getting direct stream URL for a video.
 You may show search suggestions to users before making any search.
 
