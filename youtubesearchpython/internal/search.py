@@ -63,6 +63,8 @@ class SearchInternal(RequestHandler, ComponentHandler):
         for element in self.responseSource:
             if videoElementKey in element.keys() and findVideos:
                 self.resultComponents.append(self._getVideoComponent(element))
+            if gridVideoElementKey in element.keys() and findVideos:
+                self.resultComponents.append(self._getGridVideoComponent(element))
             if channelElementKey in element.keys() and findChannels:
                 self.resultComponents.append(self._getChannelComponent(element))
             if playlistElementKey in element.keys() and findPlaylists:
@@ -145,12 +147,8 @@ class ChannelVideoSearchInternal(SearchInternal):
         self.searchPreferences = searchPreferences
         self.continuationKey = None
 
-        self.isSearchMode = True
-        if query is None:
-            self.isSearchMode = False
-
-        self._makeChannelVideoSearchRequest()
-        self._parseChannelVideoSearchSource()
+        self._makeBrowseRequest()
+        self._parseBrowseSearchSource()
 
     def next(self) -> bool:
         """Gets the subsequent search result. Call result
@@ -165,8 +163,53 @@ class ChannelVideoSearchInternal(SearchInternal):
             self.response = None
             self.responseSource = None
             self.resultComponents = []
-            self._makeChannelVideoSearchRequest()
-            self._parseChannelVideoSearchSource()
+            self._makeBrowseRequest()
+            self._parseBrowseSearchSource()
+            self._getComponents(*self.searchMode)
+            return True
+        else:
+            return False
+
+
+class ChannelVideoListInternal(SearchInternal):
+    def __init__(
+        self,
+        browseId: str,
+        limit: int,
+        language: str,
+        region: str,
+        searchPreferences: str,
+    ):
+        self.response = None
+        self.responseSource = None
+        self.resultComponents = []
+
+        self.browseId = browseId
+        self.query = None
+        self.limit = limit
+        self.language = language
+        self.region = region
+        self.searchPreferences = searchPreferences
+        self.continuationKey = None
+
+        self._makeBrowseRequest()
+        self._parseBrowseListSource()
+
+    def next(self) -> bool:
+        """Gets the subsequent search result. Call result
+
+        Args:
+            mode (int, optional): Sets the type of result. Defaults to ResultMode.dict.
+
+        Returns:
+            Union[str, dict]: Returns True if getting more results was successful.
+        """
+        if self.continuationKey:
+            self.response = None
+            self.responseSource = None
+            self.resultComponents = []
+            self._makeBrowseRequest()
+            self._parseBrowseListSource()
             self._getComponents(*self.searchMode)
             return True
         else:

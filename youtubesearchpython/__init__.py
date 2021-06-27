@@ -6,6 +6,7 @@ from youtubesearchpython.search import (
     CustomSearch,
     ChannelSearch,
     ChannelVideosSearch,
+    ChannelVideosList,
 )
 from youtubesearchpython.extras import Video, Playlist, Suggestions
 from youtubesearchpython.streamurlfetcher import StreamURLFetcher

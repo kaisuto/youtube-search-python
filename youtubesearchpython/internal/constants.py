@@ -45,7 +45,7 @@ browseGridContentPath = [
     "twoColumnBrowseResultsRenderer",
     "tabs",
     1,
-    "expandableTabRenderer",
+    "tabRenderer",
     "content",
     "sectionListRenderer",
     "contents",
@@ -68,6 +68,12 @@ continuationContentPath = [
     "continuationItems",
 ]
 browseContinuationContentPath = [
+    "onResponseReceivedActions",
+    0,
+    "appendContinuationItemsAction",
+    "continuationItems",
+]
+browseContinuationGridContentPath = [
     "onResponseReceivedActions",
     0,
     "appendContinuationItemsAction",
@@ -132,3 +138,9 @@ class VideoSortOrder:
     uploadDate = "CAISAhAB"
     viewCount = "CAMSAhAB"
     rating = "CAESAhAB"
+
+
+class ChannelVideoSortOrder:
+    newest = "EgZ2aWRlb3M%3D"
+    oldest = "EgZ2aWRlb3MYAiAAMAE%3D"
+    hottest = "EgZ2aWRlb3MYASAAMAE%3D"

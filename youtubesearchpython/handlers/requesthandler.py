@@ -111,7 +111,7 @@ class RequestHandler(ComponentHandler):
         except:
             raise Exception("ERROR: Could not parse YouTube response.")
 
-    def _makeChannelVideoSearchRequest(self, requestBody=None, timeout=None) -> None:
+    def _makeBrowseRequest(self, requestBody=None, timeout=None) -> None:
         if requestBody is None:
             requestBody = copy.deepcopy(requestPayload)
 
@@ -145,33 +145,55 @@ class RequestHandler(ComponentHandler):
         except:
             raise Exception("ERROR: Could not make request.")
 
-    def _parseChannelVideoSearchSource(self) -> None:
+    def _parseBrowseSearchSource(self) -> None:
         try:
-            if not self.continuationKey:
-                elements = self._getValue(self.response, browseContentPath)
-            else:
+            if self.continuationKey:
                 elements = self._getValue(self.response, browseContinuationContentPath)
-
-            if elements:
-                responseSource = []
-                for element in elements:
-                    if itemSectionKey in element.keys():
-                        videoElements = self._getValue(
-                            element, [itemSectionKey, "contents"]
-                        )
-                        responseSource.extend(videoElements)
-
-                    if continuationItemKey in element.keys():
-                        self.continuationKey = self._getValue(
-                            element, continuationKeyPath
-                        )
             else:
-                responseSource = self._getValue(
-                    json.loads(self.response), fallbackContentPath
+                elements = self._getValue(self.response, browseContentPath)
+
+            responseSource = []
+            for element in elements:
+                if itemSectionKey in element.keys():
+                    videoElements = self._getValue(
+                        element, [itemSectionKey, "contents"]
+                    )
+                    responseSource.extend(videoElements)
+
+                if continuationItemKey in element.keys():
+                    self.continuationKey = self._getValue(element, continuationKeyPath)
+            self.responseSource = responseSource
+        except KeyError as e:
+            raise Exception("ERROR: Could not parse YouTube response.")
+
+    def _parseBrowseListSource(self) -> None:
+        try:
+            if self.continuationKey:
+                self.responseSource = self._getValue(
+                    self.response, browseContinuationGridContentPath
                 )
-                self.continuationKey = self._getValue(
-                    responseSource[-1], continuationKeyPath
-                )
+                return
+
+            responseSource = []
+            elements = self._getValue(self.response, browseGridContentPath)
+            for element in elements:
+                if itemSectionKey in element.keys():
+                    gridRendererElements = self._getValue(
+                        element, [itemSectionKey, "contents"]
+                    )
+                    for gridRendererElement in gridRendererElements:
+                        gridVideoRendererElements = self._getValue(
+                            gridRendererElement, gridVideoRendererPath
+                        )
+                        for gridVideoRendererElement in gridVideoRendererElements:
+                            if gridVideoElementKey in gridVideoRendererElement.keys():
+                                responseSource.append(gridVideoRendererElement)
+
+                            if continuationItemKey in gridVideoRendererElement.keys():
+                                self.continuationKey = self._getValue(
+                                    gridVideoRendererElement, continuationKeyPath
+                                )
+
             self.responseSource = responseSource
         except KeyError as e:
             raise Exception("ERROR: Could not parse YouTube response.")
