@@ -70,13 +70,33 @@ print(channel_search_results)
 """
 Search videos in specified channel from YouTube.
 """
-search = ChannelVideosSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
+search = ChannelVideosSearch("UC_a1ZYZ8ZTXpjg9xUY9sj8w", "怖い話")
 
-channel_videos_search_results = search.result(mode=ResultMode.json)
+channel_videos_search_results1 = search.result(mode=ResultMode.dict)
 
-print(channel_videos_search_results)
+print(channel_videos_search_results1)
 
-print("eq:", channel_search_results == channel_videos_search_results)
+search.next()
+
+channel_videos_search_results2 = search.result(mode=ResultMode.dict)
+
+print(channel_videos_search_results2)
+
+
+"""
+List videos in specified channel from YouTube.
+"""
+list_ = ChannelVideosList("UC_a1ZYZ8ZTXpjg9xUY9sj8w")
+
+channel_videos_list_results1 = list_.result(mode=ResultMode.dict)
+
+print(channel_videos_list_results1)
+
+list_.next()
+
+channel_videos_list_results2 = list_.result(mode=ResultMode.dict)
+
+print(channel_videos_list_results2)
 
 
 """
