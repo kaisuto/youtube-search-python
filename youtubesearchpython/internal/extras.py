@@ -2,6 +2,9 @@ import json
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 from typing import Union, List
+
+import arrow
+
 from youtubesearchpython.internal.constants import *
 
 
@@ -85,9 +88,7 @@ class VideoInternal:
             component = {
                 "id": self.__getValue(element, ["videoDetails", "videoId"]),
                 "title": self.__getValue(element, ["videoDetails", "title"]),
-                "viewCount": {
-                    "text": self.__getValue(element, ["videoDetails", "viewCount"])
-                },
+                "viewCount": 0,
                 "thumbnails": self.__getValue(
                     element, ["videoDetails", "thumbnail", "thumbnails"]
                 ),
@@ -106,13 +107,78 @@ class VideoInternal:
                     element, ["microformat", "playerMicroformatRenderer", "publishDate"]
                 ),
                 "uploadDate": self.__getValue(
-                    element, ["microformat", "playerMicroformatRenderer", "uploadDate"]
+                    element,
+                    ["microformat", "playerMicroformatRenderer", "uploadDate"],
+                ),
+                "startTime": self.__getValue(
+                    element,
+                    [
+                        "microformat",
+                        "playerMicroformatRenderer",
+                        "liveBroadcastDetails",
+                        "startTimestamp",
+                    ],
+                ),
+                "endTime": self.__getValue(
+                    element,
+                    [
+                        "microformat",
+                        "playerMicroformatRenderer",
+                        "liveBroadcastDetails",
+                        "endTimestamp",
+                    ],
+                ),
+                "startTimestamp": None,
+                "endTimestamp": None,
+                "isPrivate": self.__getValue(
+                    element,
+                    [
+                        "videoDetails",
+                        "isPrivate",
+                    ],
+                ),
+                "isUpcoming": self.__getValue(
+                    element,
+                    [
+                        "videoDetails",
+                        "isUpcoming",
+                    ],
+                ),
+                "isLiveContent": self.__getValue(
+                    element,
+                    [
+                        "videoDetails",
+                        "isLiveContent",
+                    ],
+                ),
+                "isLiveNow": self.__getValue(
+                    element,
+                    [
+                        "microformat",
+                        "playerMicroformatRenderer",
+                        "liveBroadcastDetails",
+                        "isLiveNow",
+                    ],
                 ),
             }
             component["link"] = "https://www.youtube.com/watch?v=" + component["id"]
             component["channel"]["link"] = (
                 "https://www.youtube.com/channel/" + component["channel"]["id"]
             )
+
+            viewCount = self.__getValue(element, ["videoDetails", "viewCount"])
+            component["viewCount"] = int(viewCount)
+
+            if component["startTime"]:
+                component["startTimestamp"] = arrow.get(
+                    component["startTime"]
+                ).timestamp()
+            if component["endTime"]:
+                component["endTimestamp"] = arrow.get(component["endTime"]).timestamp()
+
+            if component["isUpcoming"] is None:
+                component["isUpcoming"] = False
+
             videoComponent.update(component)
         if mode in ["getFormats", None]:
             component = {
