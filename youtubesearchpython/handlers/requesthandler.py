@@ -115,7 +115,9 @@ class RequestHandler(ComponentHandler):
         if requestBody is None:
             requestBody = copy.deepcopy(requestPayload)
 
-        requestBody["query"] = self.query
+        if self.query:
+            requestBody["query"] = self.query
+
         requestBody["browseId"] = self.browseId
         requestBody["client"] = {
             "hl": self.language,
@@ -145,6 +147,31 @@ class RequestHandler(ComponentHandler):
 
     def _parseChannelVideoSearchSource(self) -> None:
         try:
-            self.response = self._getValue(self.response, browseSearchContentPath)
+            if not self.continuationKey:
+                elements = self._getValue(self.response, browseSearchContentPath)
+            else:
+                elements = self._getValue(self.response, continuationContentPath)
+
+            if elements:
+                responseSource = []
+                for element in elements:
+                    if itemSectionKey in element.keys():
+                        videoElements = self._getValue(
+                            element, [itemSectionKey, "contents"]
+                        )
+                        responseSource.extend(videoElements)
+
+                    if continuationItemKey in element.keys():
+                        self.continuationKey = self._getValue(
+                            element, continuationKeyPath
+                        )
+            else:
+                responseSource = self._getValue(
+                    json.loads(self.response), fallbackContentPath
+                )
+                self.continuationKey = self._getValue(
+                    responseSource[-1], continuationKeyPath
+                )
+            self.responseSource = responseSource
         except KeyError as e:
             raise Exception("ERROR: Could not parse YouTube response.")

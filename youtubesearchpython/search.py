@@ -351,15 +351,16 @@ class ChannelVideosSearch(ChannelVideoSearchInternal):
     """Searches for videos in specific channel in YouTube.
 
     Args:
-        query (str): Sets the search query.
         browseId (str): Channel ID
+        query (str): Sets the search query.
+        limit (int, optional): Sets limit to the number of results. Defaults to be disabled.
         language (str, optional): Sets the result language. Defaults to 'en'.
         region (str, optional): Sets the result region. Defaults to 'US'.
 
     Examples:
         Calling `result` method gives the search result.
 
-        >>> search = ChannelSearch('Watermelon Sugar', "UCZFWPqqPkFlNwIxcpsLOwew")
+        >>> search = ChannelSearch("UCZFWPqqPkFlNwIxcpsLOwew", 'Watermelon Sugar')
         >>> print(search.result())
         {
             "result": [
@@ -421,12 +422,16 @@ class ChannelVideosSearch(ChannelVideoSearchInternal):
 
     def __init__(
         self,
-        query: str,
         browseId: str,
+        query: str = None,
+        limit: int = None,
+        searchPreferences: str = SearchMode.channelVideos,
         language: str = "en",
         region: str = "US",
     ):
-        super().__init__(query, browseId, language, region, SearchMode.channelVideos)
+        self.searchMode = (True, False, False)
+        super().__init__(browseId, query, limit, language, region, searchPreferences)
+        self._getComponents(*self.searchMode)
 
 
 class CustomSearch(SearchInternal):

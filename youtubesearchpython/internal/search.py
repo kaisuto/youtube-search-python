@@ -81,7 +81,7 @@ class SearchInternal(RequestHandler, ComponentHandler):
                 if videoElementKey in richItemElement.keys():
                     videoComponent = self._getVideoComponent(richItemElement)
                     self.resultComponents.append(videoComponent)
-            if len(self.resultComponents) >= self.limit:
+            if self.limit is not None and len(self.resultComponents) >= self.limit:
                 break
 
 
@@ -123,11 +123,12 @@ class ChannelSearchInternal(RequestHandler, ComponentHandler):
             return {"result": self.response}
 
 
-class ChannelVideoSearchInternal(RequestHandler, ComponentHandler):
+class ChannelVideoSearchInternal(SearchInternal):
     def __init__(
         self,
-        query: str,
         browseId: str,
+        query: str,
+        limit: int,
         language: str,
         region: str,
         searchPreferences: str,
@@ -136,27 +137,17 @@ class ChannelVideoSearchInternal(RequestHandler, ComponentHandler):
         self.responseSource = None
         self.resultComponents = []
 
+        self.browseId = browseId
         self.query = query
+        self.limit = limit
         self.language = language
         self.region = region
-        self.browseId = browseId
         self.searchPreferences = searchPreferences
         self.continuationKey = None
 
+        self.isSearchMode = True
+        if query is None:
+            self.isSearchMode = False
+
         self._makeChannelVideoSearchRequest()
         self._parseChannelVideoSearchSource()
-        self.response = self._getChannelVideoSearchComponent(self.response)
-
-    def result(self, mode: int = ResultMode.dict) -> Union[str, dict]:
-        """Returns the search result.
-
-        Args:
-            mode (int, optional): Sets the type of result. Defaults to ResultMode.dict.
-
-        Returns:
-            Union[str, dict]: Returns JSON or dictionary.
-        """
-        if mode == ResultMode.json:
-            return json.dumps({"result": self.response}, indent=4)
-        elif mode == ResultMode.dict:
-            return {"result": self.response}

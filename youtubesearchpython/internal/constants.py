@@ -14,6 +14,7 @@ userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML
 
 
 videoElementKey = "videoRenderer"
+gridVideoElementKey = "gridVideoRenderer"
 channelElementKey = "channelRenderer"
 playlistElementKey = "playlistRenderer"
 shelfElementKey = "shelfRenderer"
@@ -48,6 +49,10 @@ browseSearchContentPath = [
     "content",
     "sectionListRenderer",
     "contents",
+]
+gridVideoRendererPath = [
+    "gridRenderer",
+    "items",
 ]
 fallbackContentPath = [
     "contents",
@@ -101,7 +106,6 @@ class SearchMode:
     channels = "EgIQAg%3D%3D"
     playlists = "EgIQAw%3D%3D"
     channelVideos = "EgZzZWFyY2g%3D"
-    listChannelVideos = "EgZ2aWRlb3M%3D"
 
 
 class VideoUploadDateFilter:
