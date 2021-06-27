@@ -145,8 +145,6 @@ class RequestHandler(ComponentHandler):
 
     def _parseChannelVideoSearchSource(self) -> None:
         try:
-            self.response = self.response["contents"]["twoColumnBrowseResultsRenderer"][
-                "tabs"
-            ][-1]["expandableTabRenderer"]["content"]["sectionListRenderer"]["contents"]
-        except:
+            self.response = self._getValue(self.response, browseSearchContentPath)
+        except KeyError as e:
             raise Exception("ERROR: Could not parse YouTube response.")

@@ -124,10 +124,6 @@ class ChannelSearchInternal(RequestHandler, ComponentHandler):
 
 
 class ChannelVideoSearchInternal(RequestHandler, ComponentHandler):
-    response = None
-    responseSource = None
-    resultComponents = []
-
     def __init__(
         self,
         query: str,
@@ -136,12 +132,17 @@ class ChannelVideoSearchInternal(RequestHandler, ComponentHandler):
         region: str,
         searchPreferences: str,
     ):
+        self.response = None
+        self.responseSource = None
+        self.resultComponents = []
+
         self.query = query
         self.language = language
         self.region = region
         self.browseId = browseId
         self.searchPreferences = searchPreferences
         self.continuationKey = None
+
         self._makeChannelVideoSearchRequest()
         self._parseChannelVideoSearchSource()
         self.response = self._getChannelVideoSearchComponent(self.response)

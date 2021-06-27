@@ -60,9 +60,11 @@ videoFormats = Video.getFormats("z0GKGpObgPY")
 print(videoFormats)
 
 
-channel = ChannelSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
+search = ChannelSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
 
-print(channel.result(mode=ResultMode.json))
+channel_search_results = search.result(mode=ResultMode.json)
+
+print(channel_search_results)
 
 
 """
@@ -70,7 +72,11 @@ Search videos in specified channel from YouTube.
 """
 search = ChannelVideosSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
 
-print(search.result(mode=ResultMode.json))
+channel_videos_search_results = search.result(mode=ResultMode.json)
+
+print(channel_videos_search_results)
+
+print("eq:", channel_search_results == channel_videos_search_results)
 
 
 """

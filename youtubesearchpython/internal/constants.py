@@ -29,6 +29,26 @@ contentPath = [
     "sectionListRenderer",
     "contents",
 ]
+browseVideoContentPath = [
+    "contents",
+    "twoColumnBrowseResultsRenderer",
+    "tabs",
+    1,
+    "expandableTabRenderer",
+    "content",
+    "sectionListRenderer",
+    "contents",
+]
+browseSearchContentPath = [
+    "contents",
+    "twoColumnBrowseResultsRenderer",
+    "tabs",
+    -1,
+    "expandableTabRenderer",
+    "content",
+    "sectionListRenderer",
+    "contents",
+]
 fallbackContentPath = [
     "contents",
     "twoColumnSearchResultsRenderer",
