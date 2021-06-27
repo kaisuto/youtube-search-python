@@ -151,3 +151,23 @@ class ChannelVideoSearchInternal(SearchInternal):
 
         self._makeChannelVideoSearchRequest()
         self._parseChannelVideoSearchSource()
+
+    def next(self) -> bool:
+        """Gets the subsequent search result. Call result
+
+        Args:
+            mode (int, optional): Sets the type of result. Defaults to ResultMode.dict.
+
+        Returns:
+            Union[str, dict]: Returns True if getting more results was successful.
+        """
+        if self.continuationKey:
+            self.response = None
+            self.responseSource = None
+            self.resultComponents = []
+            self._makeChannelVideoSearchRequest()
+            self._parseChannelVideoSearchSource()
+            self._getComponents(*self.searchMode)
+            return True
+        else:
+            return False

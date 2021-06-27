@@ -148,9 +148,9 @@ class RequestHandler(ComponentHandler):
     def _parseChannelVideoSearchSource(self) -> None:
         try:
             if not self.continuationKey:
-                elements = self._getValue(self.response, browseSearchContentPath)
+                elements = self._getValue(self.response, browseContentPath)
             else:
-                elements = self._getValue(self.response, continuationContentPath)
+                elements = self._getValue(self.response, browseContinuationContentPath)
 
             if elements:
                 responseSource = []

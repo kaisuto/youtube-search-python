@@ -30,21 +30,21 @@ contentPath = [
     "sectionListRenderer",
     "contents",
 ]
-browseVideoContentPath = [
+browseContentPath = [
     "contents",
     "twoColumnBrowseResultsRenderer",
     "tabs",
-    1,
+    -1,
     "expandableTabRenderer",
     "content",
     "sectionListRenderer",
     "contents",
 ]
-browseSearchContentPath = [
+browseGridContentPath = [
     "contents",
     "twoColumnBrowseResultsRenderer",
     "tabs",
-    -1,
+    1,
     "expandableTabRenderer",
     "content",
     "sectionListRenderer",
@@ -63,6 +63,12 @@ fallbackContentPath = [
 ]
 continuationContentPath = [
     "onResponseReceivedCommands",
+    0,
+    "appendContinuationItemsAction",
+    "continuationItems",
+]
+browseContinuationContentPath = [
+    "onResponseReceivedActions",
     0,
     "appendContinuationItemsAction",
     "continuationItems",
