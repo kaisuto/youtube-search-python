@@ -1,7 +1,10 @@
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
+
 import json
 import copy
+import httpx
+
 from youtubesearchpython.handlers.componenthandler import ComponentHandler
 from youtubesearchpython.internal.constants import *
 
@@ -108,36 +111,36 @@ class RequestHandler(ComponentHandler):
         except:
             raise Exception("ERROR: Could not parse YouTube response.")
 
-    def _makeChannelVideoSearchRequest(self) -> None:
-        """Fixes #47"""
-        requestBody = copy.deepcopy(requestPayload)
+    def _makeChannelVideoSearchRequest(self, requestBody=None, timeout=None) -> None:
+        if requestBody is None:
+            requestBody = copy.deepcopy(requestPayload)
+
         requestBody["query"] = self.query
+        requestBody["browseId"] = self.browseId
         requestBody["client"] = {
             "hl": self.language,
             "gl": self.region,
         }
-        requestBody["params"] = self.searchPreferences
-        requestBody["browseId"] = self.browseId
+        if self.searchPreferences:
+            requestBody["params"] = self.searchPreferences
+        if self.continuationKey:
+            requestBody["continuation"] = self.continuationKey
 
-        requestBodyBytes = json.dumps(requestBody).encode("utf_8")
-        request = Request(
-            "https://www.youtube.com/youtubei/v1/browse"
-            + "?"
-            + urlencode(
-                {
-                    "key": searchKey,
-                }
-            ),
-            data=requestBodyBytes,
-            headers={
-                "Content-Type": "application/json; charset=utf-8",
-                "Content-Length": len(requestBodyBytes),
-                "User-Agent": userAgent,
-            },
-        )
         try:
-            self.response = json.loads(urlopen(request).read().decode("utf_8"))
-        except Exception as e:
+            with httpx.Client() as client:
+                response = client.post(
+                    "https://www.youtube.com/youtubei/v1/browse",
+                    params={
+                        "key": searchKey,
+                    },
+                    headers={
+                        "User-Agent": userAgent,
+                    },
+                    json=requestBody,
+                    timeout=timeout,
+                )
+                self.response = response.json()
+        except:
             raise Exception("ERROR: Could not make request.")
 
     def _parseChannelVideoSearchSource(self) -> None:
