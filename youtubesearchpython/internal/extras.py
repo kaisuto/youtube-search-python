@@ -88,7 +88,9 @@ class VideoInternal:
             component = {
                 "id": self.__getValue(element, ["videoDetails", "videoId"]),
                 "title": self.__getValue(element, ["videoDetails", "title"]),
-                "viewCount": 0,
+                "viewCount": int(
+                    self.__getValue(element, ["videoDetails", "viewCount"])
+                ),
                 "thumbnails": self.__getValue(
                     element, ["videoDetails", "thumbnail", "thumbnails"]
                 ),
@@ -128,8 +130,8 @@ class VideoInternal:
                         "endTimestamp",
                     ],
                 ),
-                "startTimestamp": None,
-                "endTimestamp": None,
+                "startTimestamp": 0,
+                "endTimestamp": 0,
                 "isPrivate": self.__getValue(
                     element,
                     [
@@ -161,20 +163,19 @@ class VideoInternal:
                     ],
                 ),
             }
-            component["link"] = "https://www.youtube.com/watch?v=" + component["id"]
+            component["link"] = "https://youtu.be/" + component["id"]
             component["channel"]["link"] = (
                 "https://www.youtube.com/channel/" + component["channel"]["id"]
             )
 
-            viewCount = self.__getValue(element, ["videoDetails", "viewCount"])
-            component["viewCount"] = int(viewCount)
-
             if component["startTime"]:
-                component["startTimestamp"] = arrow.get(
-                    component["startTime"]
-                ).timestamp()
+                component["startTimestamp"] = int(
+                    arrow.get(component["startTime"]).timestamp()
+                )
             if component["endTime"]:
-                component["endTimestamp"] = arrow.get(component["endTime"]).timestamp()
+                component["endTimestamp"] = int(
+                    arrow.get(component["endTime"]).timestamp()
+                )
 
             if component["isUpcoming"] is None:
                 component["isUpcoming"] = False
