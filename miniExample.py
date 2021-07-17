@@ -2,48 +2,6 @@ from youtubesearchpython import *
 
 
 """
-Can be used to get search results with custom defined filters.
-
-Setting second parameter as VideoSortOrder.uploadDate, to get video results sorted according to upload date.
-
-Few of the predefined filters for you to use are:
-SearchMode.videos
-VideoUploadDateFilter.lastHour
-VideoDurationFilter.long
-VideoSortOrder.viewCount
-There are many other for you to check out.
-
-If this much control isn't enough then, you may pass custom string yourself by seeing the YouTube query in any web browser e.g. 
-"EgQIBRAB" from "https://www.youtube.com/results?search_query=NoCopyrightSounds&sp=EgQIBRAB" may be passed as second parameter to get only videos, which are uploaded this year.
-"""
-customSearch = CustomSearch(
-    "NoCopyrightSounds", VideoSortOrder.uploadDate, language="en", region="US"
-)
-print(customSearch.result())
-
-
-"""
-Getting search results from the next pages on YouTube.
-Generally you'll get maximum of 20 videos in one search, for getting subsequent results, you may call `next` method.
-"""
-search = VideosSearch("NoCopyrightSounds")
-index = 0
-for video in search.result()["result"]:
-    print(str(index) + " - " + video["title"])
-    index += 1
-"""Getting result on 2nd page."""
-search.next()
-for video in search.result()["result"]:
-    print(str(index) + " - " + video["title"])
-    index += 1
-"""Getting result on 3rd page."""
-search.next()
-for video in search.result()["result"]:
-    print(str(index) + " - " + video["title"])
-    index += 1
-
-
-"""
 Getting information about video or its formats using video link or video ID.
 
 `Video.get` method will give both information & formats of the video
@@ -52,19 +10,13 @@ Getting information about video or its formats using video link or video ID.
 
 You may either pass link or ID, method will take care itself.
 """
-video = Video.get("https://www.youtube.com/watch?v=z0GKGpObgPY", mode=ResultMode.json)
+video_id = "P1Qtn6p6468"
+video = Video.get("https://www.youtube.com/watch?v=" + video_id, mode=ResultMode.dict)
 print(video)
-videoInfo = Video.getInfo("https://youtu.be/z0GKGpObgPY", mode=ResultMode.json)
+videoInfo = Video.getInfo("https://youtu.be/" + video_id, mode=ResultMode.dict)
 print(videoInfo)
-videoFormats = Video.getFormats("z0GKGpObgPY")
+videoFormats = Video.getFormats(video_id)
 print(videoFormats)
-
-
-search = ChannelSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
-
-channel_search_results = search.result(mode=ResultMode.json)
-
-print(channel_search_results)
 
 
 """
@@ -76,11 +28,21 @@ channel_videos_search_results1 = search.result(mode=ResultMode.dict)
 
 print(channel_videos_search_results1)
 
+
+"""
+Getting search results from the next pages on YouTube.
+Generally you'll get maximum of 30 videos in one search, for getting subsequent results, you may call `next` method.
+"""
+search = ChannelVideosSearch("UC_a1ZYZ8ZTXpjg9xUY9sj8w", "怖い話")
+index = 0
+for video in search.result(mode=ResultMode.dict)["result"]:
+    print(str(index) + " - " + video["title"])
+    index += 1
+"""Getting result on 2nd page."""
 search.next()
-
-channel_videos_search_results2 = search.result(mode=ResultMode.dict)
-
-print(channel_videos_search_results2)
+for video in search.result(mode=ResultMode.dict)["result"]:
+    print(str(index) + " - " + video["title"])
+    index += 1
 
 
 """
@@ -92,20 +54,18 @@ channel_videos_list_results1 = list_.result(mode=ResultMode.dict)
 
 print(channel_videos_list_results1)
 
+
+"""
+Getting list results from the next pages on YouTube.
+Generally you'll get maximum of 30 videos in one list, for getting subsequent results, you may call `next` method.
+"""
+list_ = ChannelVideosList("UC_a1ZYZ8ZTXpjg9xUY9sj8w")
+index = 0
+for video in list_.result(mode=ResultMode.dict)["result"]:
+    print(str(index) + " - " + video["title"])
+    index += 1
+"""Getting result on 2nd page."""
 list_.next()
-
-channel_videos_list_results2 = list_.result(mode=ResultMode.dict)
-
-print(channel_videos_list_results2)
-
-
-"""
-You may add/omit the optional parameters according to your requirement & use case.
-"""
-
-
-"""
-Thanks for your support & love!
-
-- github.com/alexmercerind
-"""
+for video in list_.result(mode=ResultMode.dict)["result"]:
+    print(str(index) + " - " + video["title"])
+    index += 1
