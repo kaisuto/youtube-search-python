@@ -1,9 +1,13 @@
 from youtubesearchpython.internal.constants import *
-from youtubesearchpython.internal.search import SearchInternal, ChannelSearchInternal
+from youtubesearchpython.internal.search import (
+    SearchInternal,
+    ChannelVideoSearchInternal,
+    ChannelVideoListInternal,
+)
 
 
 class Search(SearchInternal):
-    '''Searches for videos, channels & playlists in YouTube.
+    """Searches for videos, channels & playlists in YouTube.
 
     Args:
         query (str): Sets the search query.
@@ -66,14 +70,18 @@ class Search(SearchInternal):
                 }
             ]
         }
-    '''
-    def __init__(self, query: str, limit: int = 20, language: str = 'en', region: str = 'US'):
+    """
+
+    def __init__(
+        self, query: str, limit: int = 20, language: str = "en", region: str = "US"
+    ):
         self.searchMode = (True, True, True)
         super().__init__(query, limit, language, region, None)
         self._getComponents(*self.searchMode)
 
+
 class VideosSearch(SearchInternal):
-    '''Searches for videos in YouTube.
+    """Searches for videos in YouTube.
 
     Args:
         query (str): Sets the search query.
@@ -136,15 +144,18 @@ class VideosSearch(SearchInternal):
                 }
             ]
         }
-    '''
-    def __init__(self, query: str, limit: int = 20, language: str = 'en', region: str = 'US'):
+    """
+
+    def __init__(
+        self, query: str, limit: int = 20, language: str = "en", region: str = "US"
+    ):
         self.searchMode = (True, False, False)
         super().__init__(query, limit, language, region, SearchMode.videos)
         self._getComponents(*self.searchMode)
 
 
 class ChannelsSearch(SearchInternal):
-    '''Searches for channels in YouTube.
+    """Searches for channels in YouTube.
 
     Args:
         query (str): Sets the search query.
@@ -182,15 +193,18 @@ class ChannelsSearch(SearchInternal):
                 }
             ]
         }
-    '''
-    def __init__(self, query: str, limit: int = 20, language: str = 'en', region: str = 'US'):
+    """
+
+    def __init__(
+        self, query: str, limit: int = 20, language: str = "en", region: str = "US"
+    ):
         self.searchMode = (False, True, False)
         super().__init__(query, limit, language, region, SearchMode.channels)
         self._getComponents(*self.searchMode)
 
 
 class PlaylistsSearch(SearchInternal):
-    '''Searches for playlists in YouTube.
+    """Searches for playlists in YouTube.
 
     Args:
         query (str): Sets the search query.
@@ -241,25 +255,30 @@ class PlaylistsSearch(SearchInternal):
                 }
             ]
         }
-    '''
-    def __init__(self, query: str, limit: int = 20, language: str = 'en', region: str = 'US'):
+    """
+
+    def __init__(
+        self, query: str, limit: int = 20, language: str = "en", region: str = "US"
+    ):
         self.searchMode = (False, False, True)
         super().__init__(query, limit, language, region, SearchMode.playlists)
         self._getComponents(*self.searchMode)
 
-class ChannelSearch(ChannelSearchInternal):
-    '''Searches for videos in specific channel in YouTube.
+
+class ChannelVideosSearch(ChannelVideoSearchInternal):
+    """Searches for videos in specific channel in YouTube.
 
     Args:
-        query (str): Sets the search query.
         browseId (str): Channel ID
+        query (str): Sets the search query.
+        limit (int, optional): Sets limit to the number of results. Defaults to be disabled.
         language (str, optional): Sets the result language. Defaults to 'en'.
         region (str, optional): Sets the result region. Defaults to 'US'.
 
     Examples:
         Calling `result` method gives the search result.
 
-        >>> search = ChannelSearch('Watermelon Sugar', "UCZFWPqqPkFlNwIxcpsLOwew")
+        >>> search = ChannelVideosSearch("UCZFWPqqPkFlNwIxcpsLOwew", 'Watermelon Sugar')
         >>> print(search.result())
         {
             "result": [
@@ -317,13 +336,109 @@ class ChannelSearch(ChannelSearchInternal):
                 },
             ]
         }
-    '''
+    """
 
-    def __init__(self, query: str, browseId: str, language: str = 'en', region: str = 'US', searchPreferences: str = "EgZzZWFyY2g%3D"):
-        super().__init__(query, language, region, searchPreferences, browseId)
+    def __init__(
+        self,
+        browseId: str,
+        query: str = None,
+        limit: int = None,
+        searchPreferences: str = SearchMode.channelVideos,
+        language: str = "en",
+        region: str = "US",
+    ):
+        self.searchMode = (True, False, False)
+        super().__init__(browseId, query, limit, language, region, searchPreferences)
+        self._getComponents(*self.searchMode)
+
+
+class ChannelVideosList(ChannelVideoListInternal):
+    """List videos in specific channel in YouTube.
+
+    Args:
+        browseId (str): Channel ID
+        limit (int, optional): Sets limit to the number of results. Defaults to be disabled.
+        language (str, optional): Sets the result language. Defaults to 'en'.
+        region (str, optional): Sets the result region. Defaults to 'US'.
+
+    Examples:
+        Calling `result` method gives the search result.
+
+        >>> search = ChannelVideosList("UCZFWPqqPkFlNwIxcpsLOwew")
+        >>> print(search.result())
+        {
+            "result": [
+                {
+                    "id": "WMcIfZuRuU8",
+                    "thumbnails": {
+                        "normal": [
+                            {
+                                "url": "https://i.ytimg.com/vi/WMcIfZuRuU8/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLClFg6C1r5NfTQy7TYUq6X5qHUmPA",
+                                "width": 168,
+                                "height": 94
+                            },
+                            {
+                                "url": "https://i.ytimg.com/vi/WMcIfZuRuU8/hqdefault.jpg?sqp=-oaymwEbCMQBEG5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLAoOyftwY0jLV4geWb5hejULYp3Zw",
+                                "width": 196,
+                                "height": 110
+                            },
+                            {
+                                "url": "https://i.ytimg.com/vi/WMcIfZuRuU8/hqdefault.jpg?sqp=-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLCdqkhn7JDwLvRtTNx3jq-olz7k-Q",
+                                "width": 246,
+                                "height": 138
+                            },
+                            {
+                                "url": "https://i.ytimg.com/vi/WMcIfZuRuU8/hqdefault.jpg?sqp=-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLAhYedsqBFKI0Ra2qzIv9cVoZhfKQ",
+                                "width": 336,
+                                "height": 188
+                            }
+                        ],
+                        "rich": null
+                    },
+                    "title": "Harry Styles \u2013 Watermelon Sugar (Lost Tour Visual)",
+                    "descriptionSnippet": "This video is dedicated to touching.\nListen to Harry Styles\u2019 new album \u2018Fine Line\u2019 now: https://HStyles.lnk.to/FineLineAY \n\nFollow Harry Styles:\nFacebook: https://HarryStyles.lnk.to/followFI...",
+                    "uri": "/watch?v=WMcIfZuRuU8",
+                    "views": {
+                        "precise": "3,888,287 views",
+                        "simple": "3.8M views",
+                        "approximate": "3.8 million views"
+                    },
+                    "duration": {
+                        "simpleText": "2:55",
+                        "text": "2 minutes, 55 seconds"
+                    },
+                    "published": "10 months ago",
+                    "channel": {
+                        "name": "Harry Styles",
+                        "thumbnails": [
+                            {
+                                "url": "https://yt3.ggpht.com/ytc/AAUvwnhR81ocC_KalYEk5ItnJcfMBqaiIpuM1B0lJyg4Rw=s88-c-k-c0x00ffffff-no-rj",
+                                "width": 68,
+                                "height": 68
+                            }
+                        ]
+                    },
+                    "type": "video"
+                },
+            ]
+        }
+    """
+
+    def __init__(
+        self,
+        browseId: str,
+        limit: int = None,
+        searchPreferences: str = ChannelVideoSortOrder.newest,
+        language: str = "en",
+        region: str = "US",
+    ):
+        self.searchMode = (True, False, False)
+        super().__init__(browseId, limit, language, region, searchPreferences)
+        self._getComponents(*self.searchMode)
+
 
 class CustomSearch(SearchInternal):
-    '''Performs custom search in YouTube with search filters or sorting orders. 
+    """Performs custom search in YouTube with search filters or sorting orders.
     Few of the predefined filters and sorting orders are:
 
         1 - SearchMode.videos
@@ -332,7 +447,7 @@ class CustomSearch(SearchInternal):
         4 - VideoSortOrder.viewCount
 
     There are many other to use.
-    The value of `sp` parameter in the YouTube search query can be used as a search filter e.g. 
+    The value of `sp` parameter in the YouTube search query can be used as a search filter e.g.
     `EgQIBRAB` from https://www.youtube.com/results?search_query=NoCopyrightSounds&sp=EgQIBRAB can be passed as `searchPreferences`, to get videos, which are uploaded this year.
 
     Args:
@@ -341,7 +456,7 @@ class CustomSearch(SearchInternal):
         limit (int, optional): Sets limit to the number of results. Defaults to 20.
         language (str, optional): Sets the result language. Defaults to 'en'.
         region (str, optional): Sets the result region. Defaults to 'US'.
-    
+
     Examples:
         Calling `result` method gives the search result.
 
@@ -397,8 +512,16 @@ class CustomSearch(SearchInternal):
                 }
             ]
         }
-    '''
-    def __init__(self, query: str, searchPreferences: str, limit: int = 20, language: str = 'en', region: str = 'US'):
+    """
+
+    def __init__(
+        self,
+        query: str,
+        searchPreferences: str,
+        limit: int = 20,
+        language: str = "en",
+        region: str = "US",
+    ):
         self.searchMode = (True, True, True)
         super().__init__(query, limit, language, region, searchPreferences)
         self._getComponents(*self.searchMode)

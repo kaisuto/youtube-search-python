@@ -2,10 +2,11 @@ import copy
 from youtubesearchpython.__future__.internal.extras import *
 from youtubesearchpython.__future__.internal.constants import *
 
+
 class Video:
     @staticmethod
     async def get(videoLink: str) -> Union[dict, None]:
-        '''Fetches information and formats  for the given video link or ID.
+        """Fetches information and formats  for the given video link or ID.
         Returns None if video is unavailable.
 
         Args:
@@ -248,14 +249,14 @@ class Video:
                         }
                     ]
                 }
-        '''
+        """
         video = VideoInternal(videoLink, None)
         await video.get()
         return video.videoComponent
-    
+
     @staticmethod
     async def getInfo(videoLink: str) -> Union[dict, None]:
-        '''Fetches only information  for the given video link or ID.
+        """Fetches only information  for the given video link or ID.
         Returns None if video is unavailable.
 
         Args:
@@ -333,14 +334,14 @@ class Video:
                 "uploadDate": "2020-05-18",
                 "link": "https://www.youtube.com/watch?v=E07s5ZYygMg",
             }
-        '''
-        video = VideoInternal(videoLink, 'getInfo')
+        """
+        video = VideoInternal(videoLink, "getInfo")
         await video.get()
         return video.videoComponent
 
     @staticmethod
     async def getFormats(videoLink: str) -> Union[dict, None]:
-        '''Fetches formats  for the given video link or ID.
+        """Fetches formats  for the given video link or ID.
         Returns None if video is unavailable.
 
         Args:
@@ -518,19 +519,19 @@ class Video:
                     ]
                 }
             }
-        '''
-        video = VideoInternal(videoLink, 'getFormats')
+        """
+        video = VideoInternal(videoLink, "getFormats")
         await video.get()
         return video.videoComponent
 
 
 class Suggestions:
-    '''Gets search suggestions for the given query.
+    """Gets search suggestions for the given query.
 
     Args:
         language (str, optional): Sets the suggestion language. Defaults to 'en'.
         region (str, optional): Sets the suggestion region. Defaults to 'US'.
-    
+
     Examples:
         Calling `result` method gives the search result.
 
@@ -554,10 +555,11 @@ class Suggestions:
                 'harry styles juice'
             ]
         }
-    '''
+    """
+
     @staticmethod
-    async def get(query: str, language: str = 'en', region: str = 'US'):
-        '''Fetches & returns the search suggestions for the given query.
+    async def get(query: str, language: str = "en", region: str = "US"):
+        """Fetches & returns the search suggestions for the given query.
 
         Args:
             language (str, optional): Sets the language of the result. Defaults to 'en'.
@@ -565,14 +567,16 @@ class Suggestions:
 
         Returns:
             Union[str, dict]: Returns JSON or dictionary.
-        '''
+        """
         suggestionsInternal = SuggestionsInternal()
-        suggestions = await suggestionsInternal.get(query, language = language, region = region)
+        suggestions = await suggestionsInternal.get(
+            query, language=language, region=region
+        )
         return suggestions
 
 
 class Playlist:
-    '''Fetches information and videos for the given playlist link.
+    """Fetches information and videos for the given playlist link.
     Returns None if playlist is unavailable.
 
     The information of the playlist can be accessed in the `info` field of the class.
@@ -586,7 +590,8 @@ class Playlist:
 
     Args:
         playlistLink (str): link of the playlist on YouTube.
-    '''
+    """
+
     playlistLink = None
     videos = []
     info = None
@@ -596,25 +601,26 @@ class Playlist:
     def __init__(self, playlistLink: str):
         self.playlistLink = playlistLink
 
-    '''Fetches more susequent videos of the playlist, and appends to the `videos` list.
+    """Fetches more susequent videos of the playlist, and appends to the `videos` list.
     `hasMoreVideos` bool indicates whether more videos can be fetched or not.
-    '''
+    """
+
     async def getNextVideos(self) -> None:
         if not self.info:
             self.__playlist = PlaylistInternal(self.playlistLink, None)
             await self.__playlist.get()
             self.info = copy.deepcopy(self.__playlist.playlistComponent)
-            self.videos = self.__playlist.playlistComponent['videos']
+            self.videos = self.__playlist.playlistComponent["videos"]
             self.hasMoreVideos = self.__playlist.continuationKey != None
-            self.info.pop('videos')
+            self.info.pop("videos")
         else:
             await self.__playlist.next()
-            self.videos = self.__playlist.playlistComponent['videos']
+            self.videos = self.__playlist.playlistComponent["videos"]
             self.hasMoreVideos = self.__playlist.continuationKey != None
-    
+
     @staticmethod
     async def get(playlistLink: str) -> Union[dict, str, None]:
-        '''Fetches information and videos for the given playlist link.
+        """Fetches information and videos for the given playlist link.
         Returns None if playlist is unavailable.
 
         Args:
@@ -1160,14 +1166,14 @@ class Playlist:
                     }
                 ]
             }
-        '''
+        """
         playlist = PlaylistInternal(playlistLink, None)
         await playlist.get()
         return playlist.playlistComponent
-    
+
     @staticmethod
     async def getInfo(playlistLink: str) -> Union[dict, str, None]:
-        '''Fetches only information for the given playlist link.
+        """Fetches only information for the given playlist link.
         Returns None if playlist is unavailable.
 
         Args:
@@ -1230,14 +1236,14 @@ class Playlist:
                     "link": "https://www.youtube.com/channel/UC_aEa8K-EOJ3D6gOs7HcyNg"
                 }
             }
-        '''
-        playlist = PlaylistInternal(playlistLink, 'getInfo')
+        """
+        playlist = PlaylistInternal(playlistLink, "getInfo")
         await playlist.get()
         return playlist.playlistComponent
 
     @staticmethod
     async def getVideos(playlistLink: str) -> Union[dict, str, None]:
-        '''Fetches only videos in the given playlist from link.
+        """Fetches only videos in the given playlist from link.
         Returns None if playlist is unavailable.
 
         Args:
@@ -1732,7 +1738,7 @@ class Playlist:
                     }
                 ]
             }
-        '''
-        playlist = PlaylistInternal(playlistLink, 'getVideos')
+        """
+        playlist = PlaylistInternal(playlistLink, "getVideos")
         await playlist.get()
         return playlist.playlistComponent
