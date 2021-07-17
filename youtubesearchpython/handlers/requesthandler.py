@@ -71,46 +71,6 @@ class RequestHandler(ComponentHandler):
         except:
             raise Exception("ERROR: Could not parse YouTube response.")
 
-    def _makeChannelSearchRequest(self) -> None:
-        """Fixes #47"""
-        requestBody = copy.deepcopy(requestPayload)
-        requestBody["query"] = self.query
-        requestBody["client"] = {
-            "hl": self.language,
-            "gl": self.region,
-        }
-        requestBody["params"] = self.searchPreferences
-        requestBody["browseId"] = self.browseId
-
-        requestBodyBytes = json.dumps(requestBody).encode("utf_8")
-        request = Request(
-            "https://www.youtube.com/youtubei/v1/browse"
-            + "?"
-            + urlencode(
-                {
-                    "key": searchKey,
-                }
-            ),
-            data=requestBodyBytes,
-            headers={
-                "Content-Type": "application/json; charset=utf-8",
-                "Content-Length": len(requestBodyBytes),
-                "User-Agent": userAgent,
-            },
-        )
-        try:
-            self.response = json.loads(urlopen(request).read().decode("utf_8"))
-        except:
-            raise Exception("ERROR: Could not make request.")
-
-    def _parseChannelSearchSource(self) -> None:
-        try:
-            self.response = self.response["contents"]["twoColumnBrowseResultsRenderer"][
-                "tabs"
-            ][-1]["expandableTabRenderer"]["content"]["sectionListRenderer"]["contents"]
-        except:
-            raise Exception("ERROR: Could not parse YouTube response.")
-
     def _makeBrowseRequest(self, requestBody=None, timeout=None) -> None:
         if requestBody is None:
             requestBody = copy.deepcopy(requestPayload)

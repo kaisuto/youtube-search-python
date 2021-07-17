@@ -1151,9 +1151,9 @@ print(suggestions.get('NoCopyrightSounds', mode = ResultMode.json))
 #### Getting videos and playlists in specific channel
 
 ```python
-from youtubesearchpython import ChannelSearch
+from youtubesearchpython import ChannelVideosSearch
 
-search = ChannelSearch('Watermelon Sugar', "UCZFWPqqPkFlNwIxcpsLOwew")
+search = ChannelVideosSearch("UCZFWPqqPkFlNwIxcpsLOwew", 'Watermelon Sugar')
 print(search.result(mode = ResultMode.json))
 ```
 

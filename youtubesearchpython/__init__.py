@@ -4,7 +4,6 @@ from youtubesearchpython.search import (
     ChannelsSearch,
     PlaylistsSearch,
     CustomSearch,
-    ChannelSearch,
     ChannelVideosSearch,
     ChannelVideosList,
 )

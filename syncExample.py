@@ -129,15 +129,10 @@ suggestions = Suggestions(language="en", region="US")
 print(suggestions.get("NoCopyrightSounds", mode=ResultMode.json))
 
 
-channel = ChannelSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
-
-print(channel.result(mode=ResultMode.json))
-
-
 """
 Search videos in specified channel from YouTube.
 """
-search = ChannelVideosSearch("Watermelon Sugar", "UCZFWPqqPkFlNwIxcpsLOwew")
+search = ChannelVideosSearch("UCZFWPqqPkFlNwIxcpsLOwew", "Watermelon Sugar")
 
 print(search.result(mode=ResultMode.json))
 
