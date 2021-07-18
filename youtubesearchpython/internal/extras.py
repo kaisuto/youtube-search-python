@@ -175,20 +175,22 @@ class VideoInternal:
             videoComponent.update(component)
         return videoComponent
 
-    def __getValue(self, source: dict, path: List[str]) -> Union[str, int, dict, None]:
+    def __getValue(
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
+    ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
             if type(key) is str:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 
@@ -540,20 +542,22 @@ class PlaylistInternal:
         elif mode == ResultMode.json:
             return json.dumps(self.playlistComponent, indent=4)
 
-    def __getValue(self, source: dict, path: List[str]) -> Union[str, int, dict, None]:
+    def __getValue(
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
+    ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
             if type(key) is str:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 

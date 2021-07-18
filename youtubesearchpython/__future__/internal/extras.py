@@ -116,7 +116,7 @@ class VideoInternal:
         return videoComponent
 
     async def __getValue(
-        self, source: dict, path: List[str]
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
     ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
@@ -124,13 +124,13 @@ class VideoInternal:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 
@@ -463,7 +463,7 @@ class PlaylistInternal:
         return playlistComponent
 
     async def __getValue(
-        self, source: dict, path: List[str]
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
     ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
@@ -471,13 +471,13 @@ class PlaylistInternal:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 
