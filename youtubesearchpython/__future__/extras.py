@@ -5,7 +5,7 @@ from youtubesearchpython.__future__.internal.constants import *
 
 class Video:
     @staticmethod
-    async def get(videoLink: str) -> Union[dict, None]:
+    async def get(videoLink: str, timeout: int = None) -> Union[dict, None]:
         """Fetches information and formats  for the given video link or ID.
         Returns None if video is unavailable.
 
@@ -250,12 +250,12 @@ class Video:
                     ]
                 }
         """
-        video = VideoInternal(videoLink, None)
+        video = VideoInternal(videoLink, None, timeout)
         await video.get()
         return video.videoComponent
 
     @staticmethod
-    async def getInfo(videoLink: str) -> Union[dict, None]:
+    async def getInfo(videoLink: str, timeout: int = None) -> Union[dict, None]:
         """Fetches only information  for the given video link or ID.
         Returns None if video is unavailable.
 
@@ -335,12 +335,12 @@ class Video:
                 "link": "https://www.youtube.com/watch?v=E07s5ZYygMg",
             }
         """
-        video = VideoInternal(videoLink, "getInfo")
+        video = VideoInternal(videoLink, "getInfo", timeout)
         await video.get()
         return video.videoComponent
 
     @staticmethod
-    async def getFormats(videoLink: str) -> Union[dict, None]:
+    async def getFormats(videoLink: str, timeout: int = None) -> Union[dict, None]:
         """Fetches formats  for the given video link or ID.
         Returns None if video is unavailable.
 
@@ -520,7 +520,7 @@ class Video:
                 }
             }
         """
-        video = VideoInternal(videoLink, "getFormats")
+        video = VideoInternal(videoLink, "getFormats", timeout)
         await video.get()
         return video.videoComponent
 
