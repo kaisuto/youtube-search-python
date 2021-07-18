@@ -10,8 +10,15 @@ from youtubesearchpython.internal.constants import *
 
 
 class VideoInternal:
-    def __init__(self, videoLink: str, componentMode: str, resultMode: int):
+    def __init__(
+        self,
+        videoLink: str,
+        componentMode: str,
+        resultMode: int,
+        timeout: int = None,
+    ):
         self.resultMode = resultMode
+        self.timeout = timeout
         statusCode = self.__makeRequest(self.__getVideoId(videoLink))
         if statusCode == 200:
             self.__parseSource()
@@ -43,6 +50,7 @@ class VideoInternal:
                     headers={
                         "User-Agent": userAgent,
                     },
+                    timeout=self.timeout,
                 )
                 self.response = response.json()
                 return response.status_code

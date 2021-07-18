@@ -7,7 +7,7 @@ from youtubesearchpython.internal.constants import *
 
 
 class RequestHandler(ComponentHandler):
-    def _makeRequest(self) -> None:
+    def _makeRequest(self, timeout=None) -> None:
         """Fixes #47"""
         requestBody = copy.deepcopy(requestPayload)
         requestBody["query"] = self.query
@@ -31,6 +31,7 @@ class RequestHandler(ComponentHandler):
                         "User-Agent": userAgent,
                     },
                     json=requestBody,
+                    timeout=timeout,
                 )
                 self.response = response.json()
         except:
