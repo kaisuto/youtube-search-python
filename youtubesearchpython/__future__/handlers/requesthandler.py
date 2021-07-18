@@ -1,10 +1,16 @@
+import copy
+
 import httpx
+
 from youtubesearchpython.__future__.handlers.componenthandler import ComponentHandler
 from youtubesearchpython.__future__.internal.constants import *
 
 
 class RequestHandler(ComponentHandler):
-    async def _makeRequest(self, requestBody=requestPayload, timeout=None) -> None:
+    async def _makeRequest(self, requestBody=None, timeout=None) -> None:
+        if requestBody is None:
+            requestBody = copy.deepcopy(requestPayload)
+
         requestBody["query"] = self.query
         requestBody["client"] = {
             "hl": self.language,
@@ -14,6 +20,7 @@ class RequestHandler(ComponentHandler):
             requestBody["params"] = self.searchPreferences
         if self.continuationKey:
             requestBody["continuation"] = self.continuationKey
+
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
