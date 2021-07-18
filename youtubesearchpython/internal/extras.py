@@ -83,9 +83,14 @@ class VideoInternal:
     def __getVideoComponent(self, element: dict, mode: str) -> dict:
         videoComponent = {}
         if mode in ["getInfo", None]:
+            video_id = self.__getValue(element, ["videoDetails", "videoId"])
+            channel_name = self.__getValue(element, ["videoDetails", "author"])
+            channel_id = self.__getValue(element, ["videoDetails", "channelId"])
+
             component = {
-                "id": self.__getValue(element, ["videoDetails", "videoId"]),
+                "id": video_id,
                 "title": self.__getValue(element, ["videoDetails", "title"]),
+                "link": "https://youtu.be/" + video_id,
                 "viewCount": int(
                     self.__getValue(element, ["videoDetails", "viewCount"])
                 ),
@@ -96,8 +101,9 @@ class VideoInternal:
                     element, ["videoDetails", "shortDescription"]
                 ),
                 "channel": {
-                    "name": self.__getValue(element, ["videoDetails", "author"]),
-                    "id": self.__getValue(element, ["videoDetails", "channelId"]),
+                    "name": channel_name,
+                    "id": channel_id,
+                    "link": "https://www.youtube.com/channel/" + channel_id,
                 },
                 "averageRating": self.__getValue(
                     element, ["videoDetails", "averageRating"]
@@ -158,15 +164,8 @@ class VideoInternal:
                         "isLiveNow",
                     ],
                 ),
+                "isUpcoming": self.__getValue(element, ["isUpcoming"], False),
             }
-            component["link"] = "https://youtu.be/" + component["id"]
-            component["channel"]["link"] = (
-                "https://www.youtube.com/channel/" + component["channel"]["id"]
-            )
-
-            if component["isUpcoming"] is None:
-                component["isUpcoming"] = False
-
             videoComponent.update(component)
         if mode in ["getFormats", None]:
             component = {
