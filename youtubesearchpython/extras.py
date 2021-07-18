@@ -5,7 +5,11 @@ from youtubesearchpython.internal.constants import *
 
 class Video(VideoInternal):
     @staticmethod
-    def get(videoLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
+    def get(
+        videoLink: str,
+        mode: int = ResultMode.dict,
+        timeout: int = None,
+    ) -> Union[dict, str, None]:
         """Fetches information and formats  for the given video link or ID.
         Returns None if video is unavailable.
 
@@ -251,10 +255,14 @@ class Video(VideoInternal):
                     ]
                 }
         """
-        return Video(videoLink, None, mode).result
+        return Video(videoLink, None, mode, timeout).result
 
     @staticmethod
-    def getInfo(videoLink: str, mode: int = ResultMode.dict) -> Union[dict, str, None]:
+    def getInfo(
+        videoLink: str,
+        mode: int = ResultMode.dict,
+        timeout: int = None,
+    ) -> Union[dict, str, None]:
         """Fetches only information for the given video link or ID.
         Returns None if video is unavailable.
 
@@ -335,11 +343,13 @@ class Video(VideoInternal):
                 "link": "https://www.youtube.com/watch?v=E07s5ZYygMg",
             }
         """
-        return Video(videoLink, "getInfo", mode).result
+        return Video(videoLink, "getInfo", mode, timeout).result
 
     @staticmethod
     def getFormats(
-        videoLink: str, mode: int = ResultMode.dict
+        videoLink: str,
+        mode: int = ResultMode.dict,
+        timeout: int = None,
     ) -> Union[dict, str, None]:
         """Fetches formats  for the given video link or ID.
         Returns None if video is unavailable.
@@ -521,7 +531,7 @@ class Video(VideoInternal):
                 }
             }
         """
-        return Video(videoLink, "getFormats", mode).result
+        return Video(videoLink, "getFormats", mode, timeout).result
 
 
 class Playlist:

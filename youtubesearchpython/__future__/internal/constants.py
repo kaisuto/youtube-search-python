@@ -14,6 +14,7 @@ userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML
 
 
 videoElementKey = "videoRenderer"
+gridVideoElementKey = "gridVideoRenderer"
 channelElementKey = "channelRenderer"
 playlistElementKey = "playlistRenderer"
 shelfElementKey = "shelfRenderer"
@@ -29,6 +30,30 @@ contentPath = [
     "sectionListRenderer",
     "contents",
 ]
+browseContentPath = [
+    "contents",
+    "twoColumnBrowseResultsRenderer",
+    "tabs",
+    -1,
+    "expandableTabRenderer",
+    "content",
+    "sectionListRenderer",
+    "contents",
+]
+browseGridContentPath = [
+    "contents",
+    "twoColumnBrowseResultsRenderer",
+    "tabs",
+    1,
+    "tabRenderer",
+    "content",
+    "sectionListRenderer",
+    "contents",
+]
+gridVideoRendererPath = [
+    "gridRenderer",
+    "items",
+]
 fallbackContentPath = [
     "contents",
     "twoColumnSearchResultsRenderer",
@@ -38,6 +63,18 @@ fallbackContentPath = [
 ]
 continuationContentPath = [
     "onResponseReceivedCommands",
+    0,
+    "appendContinuationItemsAction",
+    "continuationItems",
+]
+browseContinuationContentPath = [
+    "onResponseReceivedActions",
+    0,
+    "appendContinuationItemsAction",
+    "continuationItems",
+]
+browseContinuationGridContentPath = [
+    "onResponseReceivedActions",
     0,
     "appendContinuationItemsAction",
     "continuationItems",
@@ -75,6 +112,7 @@ class SearchMode:
     videos = "EgIQAQ%3D%3D"
     channels = "EgIQAg%3D%3D"
     playlists = "EgIQAw%3D%3D"
+    channelVideos = "EgZzZWFyY2g%3D"
 
 
 class VideoUploadDateFilter:
@@ -95,3 +133,9 @@ class VideoSortOrder:
     uploadDate = "CAISAhAB"
     viewCount = "CAMSAhAB"
     rating = "CAESAhAB"
+
+
+class ChannelVideoSortOrder:
+    newest = "EgZ2aWRlb3M%3D"
+    oldest = "EgZ2aWRlb3MYAiAAMAE%3D"
+    hottest = "EgZ2aWRlb3MYASAAMAE%3D"

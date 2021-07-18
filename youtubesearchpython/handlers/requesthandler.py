@@ -1,8 +1,5 @@
-from urllib.request import Request, urlopen
-from urllib.parse import urlencode
-
-import json
 import copy
+
 import httpx
 
 from youtubesearchpython.handlers.componenthandler import ComponentHandler
@@ -10,7 +7,7 @@ from youtubesearchpython.internal.constants import *
 
 
 class RequestHandler(ComponentHandler):
-    def _makeRequest(self) -> None:
+    def _makeRequest(self, timeout=None) -> None:
         """Fixes #47"""
         requestBody = copy.deepcopy(requestPayload)
         requestBody["query"] = self.query
@@ -22,35 +19,30 @@ class RequestHandler(ComponentHandler):
             requestBody["params"] = self.searchPreferences
         if self.continuationKey:
             requestBody["continuation"] = self.continuationKey
-        requestBodyBytes = json.dumps(requestBody).encode("utf_8")
-        request = Request(
-            "https://www.youtube.com/youtubei/v1/search"
-            + "?"
-            + urlencode(
-                {
-                    "key": searchKey,
-                }
-            ),
-            data=requestBodyBytes,
-            headers={
-                "Content-Type": "application/json; charset=utf-8",
-                "Content-Length": len(requestBodyBytes),
-                "User-Agent": userAgent,
-            },
-        )
+
         try:
-            self.response = urlopen(request).read().decode("utf_8")
+            with httpx.Client() as client:
+                response = client.post(
+                    "https://www.youtube.com/youtubei/v1/search",
+                    params={
+                        "key": searchKey,
+                    },
+                    headers={
+                        "User-Agent": userAgent,
+                    },
+                    json=requestBody,
+                    timeout=timeout,
+                )
+                self.response = response.json()
         except:
             raise Exception("ERROR: Could not make request.")
 
     def _parseSource(self) -> None:
         try:
             if not self.continuationKey:
-                responseContent = self._getValue(json.loads(self.response), contentPath)
+                responseContent = self._getValue(self.response, contentPath)
             else:
-                responseContent = self._getValue(
-                    json.loads(self.response), continuationContentPath
-                )
+                responseContent = self._getValue(self.response, continuationContentPath)
             if responseContent:
                 for element in responseContent:
                     if itemSectionKey in element.keys():
@@ -62,13 +54,11 @@ class RequestHandler(ComponentHandler):
                             element, continuationKeyPath
                         )
             else:
-                self.responseSource = self._getValue(
-                    json.loads(self.response), fallbackContentPath
-                )
+                self.responseSource = self._getValue(self.response, fallbackContentPath)
                 self.continuationKey = self._getValue(
                     self.responseSource[-1], continuationKeyPath
                 )
-        except:
+        except Exception as e:
             raise Exception("ERROR: Could not parse YouTube response.")
 
     def _makeBrowseRequest(self, requestBody=None, timeout=None) -> None:

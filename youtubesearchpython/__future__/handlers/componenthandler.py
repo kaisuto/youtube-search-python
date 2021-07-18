@@ -72,6 +72,52 @@ class ComponentHandler:
         component["shelfTitle"] = shelfTitle
         return component
 
+    async def _getGridVideoComponent(
+        self, element: dict, shelfTitle: str = None
+    ) -> dict:
+        # TODO: Add back channel info
+        video = element[gridVideoElementKey]
+        component = {
+            "type": "video",
+            "id": await self._getValue(video, ["videoId"]),
+            "title": await self._getValue(video, ["title", "runs", 0, "text"]),
+            "publishedTime": await self._getValue(
+                video, ["publishedTimeText", "simpleText"]
+            ),
+            "duration": await self._getValue(video, ["lengthText", "simpleText"]),
+            "viewCount": {
+                "text": await self._getValue(video, ["viewCountText", "simpleText"]),
+                "short": await self._getValue(
+                    video, ["shortViewCountText", "simpleText"]
+                ),
+            },
+            "thumbnails": await self._getValue(video, ["thumbnail", "thumbnails"]),
+            "richThumbnail": await self._getValue(
+                video,
+                [
+                    "richThumbnail",
+                    "movingThumbnailRenderer",
+                    "movingThumbnailDetails",
+                    "thumbnails",
+                    0,
+                ],
+            ),
+            "descriptionSnippet": await self._getValue(
+                video, ["detailedMetadataSnippets", 0, "snippetText", "runs"]
+            ),
+            "accessibility": {
+                "title": await self._getValue(
+                    video, ["title", "accessibility", "accessibilityData", "label"]
+                ),
+                "duration": await self._getValue(
+                    video, ["lengthText", "accessibility", "accessibilityData", "label"]
+                ),
+            },
+        }
+        component["link"] = "https://www.youtube.com/watch?v=" + component["id"]
+        component["shelfTitle"] = shelfTitle
+        return component
+
     async def _getChannelComponent(self, element: dict) -> dict:
         channel = element[channelElementKey]
         component = {
@@ -141,7 +187,10 @@ class ComponentHandler:
         }
 
     async def _getValue(
-        self, source: dict, path: List[Union[str, int]]
+        self,
+        source: dict,
+        path: List[Union[str, int]],
+        default: Union[str, int, dict, None] = None,
     ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
@@ -149,12 +198,12 @@ class ComponentHandler:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value

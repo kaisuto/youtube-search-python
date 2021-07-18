@@ -9,9 +9,16 @@ class SearchInternal(RequestHandler, ComponentHandler):
     response = None
     responseSource = None
     resultComponents = []
+    timeout = None
 
     def __init__(
-        self, query: str, limit: int, language: str, region: str, searchPreferences: str
+        self,
+        query: str,
+        limit: int,
+        language: str,
+        region: str,
+        searchPreferences: str,
+        timeout: int,
     ):
         self.query = query
         self.limit = limit
@@ -19,7 +26,8 @@ class SearchInternal(RequestHandler, ComponentHandler):
         self.region = region
         self.searchPreferences = searchPreferences
         self.continuationKey = None
-        self._makeRequest()
+        self.timeout = timeout
+        self._makeRequest(timeout=self.timeout)
         self._parseSource()
 
     def result(self, mode: int = ResultMode.dict) -> Union[str, dict]:
@@ -49,7 +57,7 @@ class SearchInternal(RequestHandler, ComponentHandler):
             self.response = None
             self.responseSource = None
             self.resultComponents = []
-            self._makeRequest()
+            self._makeRequest(timeout=self.timeout)
             self._parseSource()
             self._getComponents(*self.searchMode)
             return True
@@ -96,6 +104,7 @@ class ChannelVideoSearchInternal(SearchInternal):
         language: str,
         region: str,
         searchPreferences: str,
+        timeout: int,
     ):
         self.response = None
         self.responseSource = None
@@ -108,8 +117,9 @@ class ChannelVideoSearchInternal(SearchInternal):
         self.region = region
         self.searchPreferences = searchPreferences
         self.continuationKey = None
+        self.timeout = timeout
 
-        self._makeBrowseRequest()
+        self._makeBrowseRequest(timeout=self.timeout)
         self._parseBrowseSearchSource()
 
     def next(self) -> bool:
@@ -125,7 +135,7 @@ class ChannelVideoSearchInternal(SearchInternal):
             self.response = None
             self.responseSource = None
             self.resultComponents = []
-            self._makeBrowseRequest()
+            self._makeBrowseRequest(timeout=self.timeout)
             self._parseBrowseSearchSource()
             self._getComponents(*self.searchMode)
             return True
@@ -141,6 +151,7 @@ class ChannelVideoListInternal(SearchInternal):
         language: str,
         region: str,
         searchPreferences: str,
+        timeout: int,
     ):
         self.response = None
         self.responseSource = None
@@ -153,8 +164,9 @@ class ChannelVideoListInternal(SearchInternal):
         self.region = region
         self.searchPreferences = searchPreferences
         self.continuationKey = None
+        self.timeout = timeout
 
-        self._makeBrowseRequest()
+        self._makeBrowseRequest(timeout=self.timeout)
         self._parseBrowseListSource()
 
     def next(self) -> bool:
@@ -170,7 +182,7 @@ class ChannelVideoListInternal(SearchInternal):
             self.response = None
             self.responseSource = None
             self.resultComponents = []
-            self._makeBrowseRequest()
+            self._makeBrowseRequest(timeout=self.timeout)
             self._parseBrowseListSource()
             self._getComponents(*self.searchMode)
             return True

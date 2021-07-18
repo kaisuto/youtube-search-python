@@ -1,16 +1,24 @@
 import json
+
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 from typing import Union, List
 
-import arrow
+import httpx
 
 from youtubesearchpython.internal.constants import *
 
 
 class VideoInternal:
-    def __init__(self, videoLink: str, componentMode: str, resultMode: int):
+    def __init__(
+        self,
+        videoLink: str,
+        componentMode: str,
+        resultMode: int,
+        timeout: int = None,
+    ):
         self.resultMode = resultMode
+        self.timeout = timeout
         statusCode = self.__makeRequest(self.__getVideoId(videoLink))
         if statusCode == 200:
             self.__parseSource()
@@ -31,30 +39,27 @@ class VideoInternal:
             return videoLink
 
     def __makeRequest(self, videoId: str) -> int:
-        request = Request(
-            "https://www.youtube.com/watch"
-            + "?"
-            + urlencode(
-                {
-                    "v": videoId,
-                    "pbj": 1,
-                }
-            ),
-            headers={
-                "User-Agent": userAgent,
-            },
-            data=urlencode({}).encode("utf_8"),
-        )
         try:
-            response = urlopen(request)
-            self.response = response.read().decode("utf_8")
-            return response.getcode()
+            with httpx.Client() as client:
+                response = client.post(
+                    "https://www.youtube.com/watch",
+                    params={
+                        "v": videoId,
+                        "pbj": 1,
+                    },
+                    headers={
+                        "User-Agent": userAgent,
+                    },
+                    timeout=self.timeout,
+                )
+                self.response = response.json()
+                return response.status_code
         except:
             raise Exception("ERROR: Could not make request.")
 
     def __parseSource(self) -> None:
         try:
-            self.responseSource = json.loads(self.response)
+            self.responseSource = self.response
         except:
             raise Exception("ERROR: Could not parse YouTube response.")
 
@@ -85,9 +90,14 @@ class VideoInternal:
     def __getVideoComponent(self, element: dict, mode: str) -> dict:
         videoComponent = {}
         if mode in ["getInfo", None]:
+            video_id = self.__getValue(element, ["videoDetails", "videoId"])
+            channel_name = self.__getValue(element, ["videoDetails", "author"])
+            channel_id = self.__getValue(element, ["videoDetails", "channelId"])
+
             component = {
-                "id": self.__getValue(element, ["videoDetails", "videoId"]),
+                "id": video_id,
                 "title": self.__getValue(element, ["videoDetails", "title"]),
+                "link": "https://youtu.be/" + video_id,
                 "viewCount": int(
                     self.__getValue(element, ["videoDetails", "viewCount"])
                 ),
@@ -98,8 +108,9 @@ class VideoInternal:
                     element, ["videoDetails", "shortDescription"]
                 ),
                 "channel": {
-                    "name": self.__getValue(element, ["videoDetails", "author"]),
-                    "id": self.__getValue(element, ["videoDetails", "channelId"]),
+                    "name": channel_name,
+                    "id": channel_id,
+                    "link": "https://www.youtube.com/channel/" + channel_id,
                 },
                 "averageRating": self.__getValue(
                     element, ["videoDetails", "averageRating"]
@@ -130,8 +141,6 @@ class VideoInternal:
                         "endTimestamp",
                     ],
                 ),
-                "startTimestamp": 0,
-                "endTimestamp": 0,
                 "isPrivate": self.__getValue(
                     element,
                     [
@@ -162,24 +171,8 @@ class VideoInternal:
                         "isLiveNow",
                     ],
                 ),
+                "isUpcoming": self.__getValue(element, ["isUpcoming"], False),
             }
-            component["link"] = "https://youtu.be/" + component["id"]
-            component["channel"]["link"] = (
-                "https://www.youtube.com/channel/" + component["channel"]["id"]
-            )
-
-            if component["startTime"]:
-                component["startTimestamp"] = int(
-                    arrow.get(component["startTime"]).timestamp()
-                )
-            if component["endTime"]:
-                component["endTimestamp"] = int(
-                    arrow.get(component["endTime"]).timestamp()
-                )
-
-            if component["isUpcoming"] is None:
-                component["isUpcoming"] = False
-
             videoComponent.update(component)
         if mode in ["getFormats", None]:
             component = {
@@ -188,20 +181,22 @@ class VideoInternal:
             videoComponent.update(component)
         return videoComponent
 
-    def __getValue(self, source: dict, path: List[str]) -> Union[str, int, dict, None]:
+    def __getValue(
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
+    ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
             if type(key) is str:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 
@@ -553,20 +548,22 @@ class PlaylistInternal:
         elif mode == ResultMode.json:
             return json.dumps(self.playlistComponent, indent=4)
 
-    def __getValue(self, source: dict, path: List[str]) -> Union[str, int, dict, None]:
+    def __getValue(
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
+    ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
             if type(key) is str:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 

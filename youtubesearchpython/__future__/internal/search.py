@@ -50,6 +50,9 @@ class SearchInternal(RequestHandler, ComponentHandler):
             if videoElementKey in element.keys() and findVideos:
                 videoComponent = await self._getVideoComponent(element)
                 self.resultComponents.append(videoComponent)
+            if gridVideoElementKey in element.keys() and findVideos:
+                videoComponent = await self._getGridVideoComponent(element)
+                self.resultComponents.append(videoComponent)
             if channelElementKey in element.keys() and findChannels:
                 channelComponent = await self._getChannelComponent(element)
                 self.resultComponents.append(channelComponent)
@@ -73,3 +76,106 @@ class SearchInternal(RequestHandler, ComponentHandler):
                     self.resultComponents.append(videoComponent)
             if len(self.resultComponents) >= self.limit:
                 break
+
+
+class ChannelVideoSearchInternal(SearchInternal):
+    def __init__(
+        self,
+        browseId: str,
+        query: str,
+        limit: int,
+        language: str,
+        region: str,
+        searchPreferences: str,
+        timeout: int,
+    ):
+        self.response = None
+        self.responseSource = None
+        self.resultComponents = []
+
+        self.browseId = browseId
+        self.query = query
+        self.limit = limit
+        self.language = language
+        self.region = region
+        self.searchPreferences = searchPreferences
+        self.continuationKey = None
+        self.timeout = timeout
+
+    async def result(self) -> dict:
+        """Returns the search result on the next page.
+
+        Returns:
+            dict: Returns dictionary containing the search result.
+        """
+        if not self.resultComponents:
+            await self.next()
+
+        return {"result": self.resultComponents}
+
+    async def next(self) -> dict:
+        """Searches & returns the search result on the next page.
+
+        Returns:
+            dict: Returns dictionary containing the search result.
+        """
+        self.response = None
+        self.responseSource = None
+        self.resultComponents = []
+        await self._makeBrowseRequest(timeout=self.timeout)
+        await self._parseBrowseSearchSource()
+        await self._getComponents(*self.searchMode)
+        return {
+            "result": self.resultComponents,
+        }
+
+
+class ChannelVideoListInternal(SearchInternal):
+    def __init__(
+        self,
+        browseId: str,
+        limit: int,
+        language: str,
+        region: str,
+        searchPreferences: str,
+        timeout: int,
+    ):
+        self.response = None
+        self.responseSource = None
+        self.resultComponents = []
+
+        self.browseId = browseId
+        self.query = None
+        self.limit = limit
+        self.language = language
+        self.region = region
+        self.searchPreferences = searchPreferences
+        self.continuationKey = None
+        self.timeout = timeout
+
+    async def result(self) -> dict:
+        """Returns the search result on the next page.
+
+        Returns:
+            dict: Returns dictionary containing the search result.
+        """
+        if not self.resultComponents:
+            await self.next()
+
+        return {"result": self.resultComponents}
+
+    async def next(self) -> dict:
+        """Searches & returns the search result on the next page.
+
+        Returns:
+            dict: Returns dictionary containing the search result.
+        """
+        self.response = None
+        self.responseSource = None
+        self.resultComponents = []
+        await self._makeBrowseRequest(timeout=self.timeout)
+        await self._parseBrowseListSource()
+        await self._getComponents(*self.searchMode)
+        return {
+            "result": self.resultComponents,
+        }

@@ -71,14 +71,17 @@ class VideoInternal:
     async def __getVideoComponent(self, element: dict, mode: str) -> dict:
         videoComponent = {}
         if mode in ["getInfo", None]:
+            video_id = await self.__getValue(element, ["videoDetails", "videoId"])
+            channel_name = await self.__getValue(element, ["videoDetails", "author"])
+            channel_id = await self.__getValue(element, ["videoDetails", "channelId"])
+
             component = {
-                "id": await self.__getValue(element, ["videoDetails", "videoId"]),
+                "id": video_id,
                 "title": await self.__getValue(element, ["videoDetails", "title"]),
-                "viewCount": {
-                    "text": await self.__getValue(
-                        element, ["videoDetails", "viewCount"]
-                    )
-                },
+                "link": "https://youtu.be/" + video_id,
+                "viewCount": int(
+                    await self.__getValue(element, ["videoDetails", "viewCount"])
+                ),
                 "thumbnails": await self.__getValue(
                     element, ["videoDetails", "thumbnail", "thumbnails"]
                 ),
@@ -86,8 +89,9 @@ class VideoInternal:
                     element, ["videoDetails", "shortDescription"]
                 ),
                 "channel": {
-                    "name": await self.__getValue(element, ["videoDetails", "author"]),
-                    "id": await self.__getValue(element, ["videoDetails", "channelId"]),
+                    "name": channel_name,
+                    "id": channel_id,
+                    "link": "https://www.youtube.com/channel/" + channel_id,
                 },
                 "averageRating": await self.__getValue(
                     element, ["videoDetails", "averageRating"]
@@ -101,11 +105,56 @@ class VideoInternal:
                 "uploadDate": await self.__getValue(
                     element, ["microformat", "playerMicroformatRenderer", "uploadDate"]
                 ),
+                "startTime": await self.__getValue(
+                    element,
+                    [
+                        "microformat",
+                        "playerMicroformatRenderer",
+                        "liveBroadcastDetails",
+                        "startTimestamp",
+                    ],
+                ),
+                "endTime": await self.__getValue(
+                    element,
+                    [
+                        "microformat",
+                        "playerMicroformatRenderer",
+                        "liveBroadcastDetails",
+                        "endTimestamp",
+                    ],
+                ),
+                "isPrivate": await self.__getValue(
+                    element,
+                    [
+                        "videoDetails",
+                        "isPrivate",
+                    ],
+                ),
+                "isUpcoming": await self.__getValue(
+                    element,
+                    [
+                        "videoDetails",
+                        "isUpcoming",
+                    ],
+                ),
+                "isLiveContent": await self.__getValue(
+                    element,
+                    [
+                        "videoDetails",
+                        "isLiveContent",
+                    ],
+                ),
+                "isLiveNow": await self.__getValue(
+                    element,
+                    [
+                        "microformat",
+                        "playerMicroformatRenderer",
+                        "liveBroadcastDetails",
+                        "isLiveNow",
+                    ],
+                ),
+                "isUpcoming": await self.__getValue(element, ["isUpcoming"], False),
             }
-            component["link"] = "https://www.youtube.com/watch?v=" + component["id"]
-            component["channel"]["link"] = (
-                "https://www.youtube.com/channel/" + component["channel"]["id"]
-            )
             videoComponent.update(component)
         if mode in ["getFormats", None]:
             component = {
@@ -116,7 +165,7 @@ class VideoInternal:
         return videoComponent
 
     async def __getValue(
-        self, source: dict, path: List[str]
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
     ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
@@ -124,13 +173,13 @@ class VideoInternal:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 
@@ -463,7 +512,7 @@ class PlaylistInternal:
         return playlistComponent
 
     async def __getValue(
-        self, source: dict, path: List[str]
+        self, source: dict, path: List[str], default: Union[str, int, dict, None] = None
     ) -> Union[str, int, dict, None]:
         value = source
         for key in path:
@@ -471,13 +520,13 @@ class PlaylistInternal:
                 if key in value.keys():
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
             elif type(key) is int:
                 if len(value) != 0:
                     value = value[key]
                 else:
-                    value = None
+                    value = default
                     break
         return value
 
