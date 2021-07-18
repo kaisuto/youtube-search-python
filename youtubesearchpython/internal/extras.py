@@ -1,7 +1,10 @@
 import json
+
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 from typing import Union, List
+
+import httpx
 
 from youtubesearchpython.internal.constants import *
 
@@ -29,30 +32,26 @@ class VideoInternal:
             return videoLink
 
     def __makeRequest(self, videoId: str) -> int:
-        request = Request(
-            "https://www.youtube.com/watch"
-            + "?"
-            + urlencode(
-                {
-                    "v": videoId,
-                    "pbj": 1,
-                }
-            ),
-            headers={
-                "User-Agent": userAgent,
-            },
-            data=urlencode({}).encode("utf_8"),
-        )
         try:
-            response = urlopen(request)
-            self.response = response.read().decode("utf_8")
-            return response.getcode()
+            with httpx.Client() as client:
+                response = client.post(
+                    "https://www.youtube.com/watch",
+                    params={
+                        "v": videoId,
+                        "pbj": 1,
+                    },
+                    headers={
+                        "User-Agent": userAgent,
+                    },
+                )
+                self.response = response.json()
+                return response.status_code
         except:
             raise Exception("ERROR: Could not make request.")
 
     def __parseSource(self) -> None:
         try:
-            self.responseSource = json.loads(self.response)
+            self.responseSource = self.response
         except:
             raise Exception("ERROR: Could not parse YouTube response.")
 
