@@ -3,8 +3,6 @@ from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 from typing import Union, List
 
-import arrow
-
 from youtubesearchpython.internal.constants import *
 
 
@@ -130,8 +128,6 @@ class VideoInternal:
                         "endTimestamp",
                     ],
                 ),
-                "startTimestamp": 0,
-                "endTimestamp": 0,
                 "isPrivate": self.__getValue(
                     element,
                     [
@@ -167,15 +163,6 @@ class VideoInternal:
             component["channel"]["link"] = (
                 "https://www.youtube.com/channel/" + component["channel"]["id"]
             )
-
-            if component["startTime"]:
-                component["startTimestamp"] = int(
-                    arrow.get(component["startTime"]).timestamp()
-                )
-            if component["endTime"]:
-                component["endTimestamp"] = int(
-                    arrow.get(component["endTime"]).timestamp()
-                )
 
             if component["isUpcoming"] is None:
                 component["isUpcoming"] = False
